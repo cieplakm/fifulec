@@ -5,5 +5,7 @@ public interface UserContract {
         void openUserListActivity();
 
         void setUserNickTitle(String nick);
+
+        void openChallangesList();
     }
 }

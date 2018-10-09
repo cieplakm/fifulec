@@ -1,6 +1,8 @@
 package mmc.com.fifulec.repository;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import javax.inject.Inject;
@@ -31,7 +33,7 @@ public class FirebaseChallangeRepository implements ChallangeRepository {
 
     @Override
     public void getChallangesFrom(String uuid, ValueEventListener listener) {
-        database.getReference().child("challanges").orderByChild("fromUserUuid").equalTo(uuid);
+        database.getReference().child("challanges").addListenerForSingleValueEvent(listener);//todo not only for single user!!! but for all!
     }
 
 }

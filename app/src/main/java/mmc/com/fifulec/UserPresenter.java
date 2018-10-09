@@ -25,4 +25,8 @@ public class UserPresenter {
     public void onUserListClicked() {
         view.openUserListActivity();
     }
+
+    public void onChalangesClickedClicked() {
+        view.openChallangesList();
+    }
 }

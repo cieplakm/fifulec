@@ -44,6 +44,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challang
 
         rvChallangesList.setLayoutManager(new LinearLayoutManager(this));
         chalangeAdapter = new ChalangeAdapter();
+        rvChallangesList.setAdapter(chalangeAdapter);
     }
 
     @OnClick(R.id.btn_add_challange)

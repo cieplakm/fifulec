@@ -40,6 +40,10 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     public void onUsersListClicked(){
         presenter.onUserListClicked();
     }
+    @OnClick(R.id.btn_challanges)
+    public void onChalangesClicked(){
+        presenter.onChalangesClickedClicked();
+    }
 
     @Override
     public void openUserListActivity() {
@@ -50,5 +54,11 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     @Override
     public void setUserNickTitle(String nick){
         tvUserNick.setText(nick);
+    }
+
+    @Override
+    public void openChallangesList() {
+        Intent intent = new Intent(this, ChallangeListActivity.class);
+        startActivity(intent);
     }
 }

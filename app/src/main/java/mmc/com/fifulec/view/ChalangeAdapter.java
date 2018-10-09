@@ -19,13 +19,11 @@ public class ChalangeAdapter extends RecyclerView.Adapter<ChalangeAdapter.ViewHo
 
     private List<Challange> challanges;
 
-
-
     @NonNull
     @Override
     public ChalangeAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         Context context = viewGroup.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.user_item, viewGroup, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.challange_item, viewGroup, false);
         return new ChalangeAdapter.ViewHolder(view);
     }
 
