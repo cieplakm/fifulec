@@ -15,7 +15,11 @@ public class Fifulec extends Application {
         super.onCreate();
 
         daggerMainComponent = DaggerMainComponent.builder()
-                .mainModule(new MainModule())
+                .mainModule(new MainModule(this))
                 .build();
+    }
+
+    public static MainComponent component() {
+        return daggerMainComponent;
     }
 }

@@ -12,5 +12,5 @@ import dagger.releasablereferences.CanReleaseReferences;
 @Retention(RetentionPolicy.RUNTIME)
 @CanReleaseReferences
 @Scope
-public @interface FifulecScope {
+public @interface AppScope {
 }
