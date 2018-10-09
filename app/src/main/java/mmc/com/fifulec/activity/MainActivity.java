@@ -1,7 +1,9 @@
-package mmc.com.fifulec;
+package mmc.com.fifulec.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import mmc.com.fifulec.R;
 
 public class MainActivity extends AppCompatActivity {
 
