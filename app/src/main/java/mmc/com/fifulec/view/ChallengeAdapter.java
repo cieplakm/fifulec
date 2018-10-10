@@ -1,6 +1,7 @@
 package mmc.com.fifulec.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -65,8 +66,8 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
         }
 
         if (challenge.getScores() != null && (challenge.getChallengeStatus() == ChallengeStatus.NOT_CONFIRMED || challenge.getChallengeStatus() == ChallengeStatus.FINISHED)){
-            viewHolder.tvMyScore.setText(challenge.getScores().getFrom().getValue());
-            viewHolder.tvTheyScore.setText(challenge.getScores().getTo().getValue());
+            viewHolder.tvMyScore.setText(Integer.toString(challenge.getScores().getFrom().getValue()));
+            viewHolder.tvTheyScore.setText(Integer.toString(challenge.getScores().getTo().getValue()));
         }
 
         viewHolder.tvAccepted.setText(stattitle);
