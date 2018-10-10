@@ -7,5 +7,7 @@ public interface UserContract {
         void setUserNickTitle(String nick);
 
         void openChallengesList();
+
+        void setAmountChallenges(int size);
     }
 }
