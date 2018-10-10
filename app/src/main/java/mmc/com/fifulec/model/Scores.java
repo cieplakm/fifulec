@@ -1,13 +1,15 @@
 package mmc.com.fifulec.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Score {
-    private String uuid;
-    private int value;
+public class Scores {
+    private Score from;
+    private Score to;
 }

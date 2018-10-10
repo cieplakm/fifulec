@@ -20,5 +20,6 @@ public class Challenge {
     @Exclude
     private String toUserNick;
     private boolean isAccepted;
-    private Score score;
+    private ChallengeStatus challengeStatus;
+    private Scores scores;
 }

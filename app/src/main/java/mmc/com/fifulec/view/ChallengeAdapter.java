@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import mmc.com.fifulec.R;
 import mmc.com.fifulec.model.Challenge;
+import mmc.com.fifulec.model.ChallengeStatus;
 import mmc.com.fifulec.model.OnChallengeClickedListener;
 
 public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.ViewHolder> {
@@ -41,7 +42,34 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
         final Challenge challenge = challenges.get(i);
         viewHolder.tvFromUser.setText(challenge.getFromUserNick());
         viewHolder.tvToUser.setText(challenge.getToUserNick());
-        viewHolder.tvAccepted.setText(challenge.isAccepted() ? "Zaakceptowano" : "Nie zaakceptowano");
+
+        String stattitle = null;
+        switch (challenge.getChallengeStatus()){
+            case ACCEPTED:
+                stattitle="Zaakceptowany";
+                break;
+            case NOT_ACCEPTED:
+                stattitle="Nie zaakceptowany";
+                break;
+            case FINISHED:
+                stattitle="Zakończony";
+                break;
+            case REJECTED:
+                stattitle="Odrzucony";
+                break;
+            case NOT_CONFIRMED:
+                stattitle="Oczekuje na potwierdzenie";
+                break;
+
+
+        }
+
+        if (challenge.getScores() != null && (challenge.getChallengeStatus() == ChallengeStatus.NOT_CONFIRMED || challenge.getChallengeStatus() == ChallengeStatus.FINISHED)){
+            viewHolder.tvMyScore.setText(challenge.getScores().getFrom().getValue());
+            viewHolder.tvTheyScore.setText(challenge.getScores().getTo().getValue());
+        }
+
+        viewHolder.tvAccepted.setText(stattitle);
 
         viewHolder.view.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,6 +101,10 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
         TextView tvToUser;
         @BindView(R.id.tv_accepted)
         TextView tvAccepted;
+        @BindView(R.id.tv_my_score)
+        TextView tvMyScore;
+        @BindView(R.id.tv_they_score)
+        TextView tvTheyScore;
          View view;
 
         public ViewHolder(@NonNull View itemView) {

@@ -13,6 +13,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import mmc.com.fifulec.model.Challenge;
+import mmc.com.fifulec.model.OnChallengeClickedListener;
 import mmc.com.fifulec.view.ChallengeAdapter;
 
 public class ChallengeListFragment extends Fragment {
@@ -21,6 +22,7 @@ public class ChallengeListFragment extends Fragment {
     RecyclerView rvChallengesList;
 
     private ChallengeAdapter challengeAdapter = new ChallengeAdapter();
+    private OnChallengeClickedListener onChallengeClickListener;
 
     public ChallengeListFragment() {
     }
@@ -38,6 +40,11 @@ public class ChallengeListFragment extends Fragment {
     public void setChallenges4Adapter(List<Challenge> challenges) {
         challengeAdapter.setChallenges(challenges);
         challengeAdapter.notifyDataSetChanged();
+    }
+
+    public void setOnChallengeClickListener(OnChallengeClickedListener onChallengeClickListener){
+        this.onChallengeClickListener = onChallengeClickListener;
+        challengeAdapter.setOnChallengeClickedListener(onChallengeClickListener);
     }
 
     @Override

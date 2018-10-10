@@ -4,6 +4,7 @@ import java.util.List;
 
 import mmc.com.fifulec.model.Challenge;
 import mmc.com.fifulec.model.OnChallengeClickedListener;
+import mmc.com.fifulec.model.OnChallengeConfirm;
 
 public interface ChallengeListContract {
     interface View {
@@ -15,6 +16,12 @@ public interface ChallengeListContract {
 
         void setOnChallengeClickListener4Adapter(OnChallengeClickedListener onChallengeClickListener4Adapter);
 
-        void showDailogToAcceptChalange(Challenge challenge);
+        void showDaialogToAcceptChallenge(Challenge challenge);
+
+        void setOnChallenge4MeClickListener(OnChallengeClickedListener onChallengeClickedListener);
+
+        void openResolveActivity();
+
+        void showConfirmDialog(OnChallengeConfirm onChallengeConfirm);
     }
 }

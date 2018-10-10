@@ -12,6 +12,7 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import mmc.com.fifulec.di.AppScope;
 import mmc.com.fifulec.model.Challenge;
+import mmc.com.fifulec.model.ChallengeStatus;
 import mmc.com.fifulec.model.User;
 import mmc.com.fifulec.repository.ChallengeRepository;
 import mmc.com.fifulec.repository.UserRepository;
@@ -36,17 +37,36 @@ public class ChallengeService {
                 .fromUserUuid(user.getUuid())
                 .toUserUuid(toUser.getUuid())
                 .isAccepted(false)
+                .challengeStatus(ChallengeStatus.NOT_ACCEPTED)
                 .build();
         challengeRepository.createChallenge(challenge);
     }
 
     public void acceptChallenge(Challenge challenge) {
         challenge.setAccepted(true);
+        challenge.setChallengeStatus(ChallengeStatus.ACCEPTED);
+        challengeRepository.updateChallenge(challenge);
+    }
+
+    public void finishChallenge(Challenge challenge) {
+        challenge.setAccepted(true);
+        challenge.setChallengeStatus(ChallengeStatus.FINISHED);
+        challengeRepository.updateChallenge(challenge);
+    }
+
+    public void rejectChallenge(Challenge challenge) {
+        challenge.setChallengeStatus(ChallengeStatus.REJECTED);
         challengeRepository.updateChallenge(challenge);
     }
 
     public void resolveChallange(Challenge challenge) {
-        //todo implement
+        challenge.setChallengeStatus(ChallengeStatus.NOT_CONFIRMED);
+        challengeRepository.updateChallenge(challenge);
+    }
+
+    public void confirmChallange(Challenge challenge) {
+        challenge.setChallengeStatus(ChallengeStatus.FINISHED);
+        challengeRepository.updateChallenge(challenge);
     }
 
     public Observable<Challenge> challengeFromUser(User user) {

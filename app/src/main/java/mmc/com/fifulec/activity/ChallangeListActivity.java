@@ -5,8 +5,6 @@ import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.widget.FrameLayout;
 
 import java.util.List;
@@ -22,8 +20,8 @@ import mmc.com.fifulec.Fifulec;
 import mmc.com.fifulec.R;
 import mmc.com.fifulec.model.Challenge;
 import mmc.com.fifulec.model.OnChallengeClickedListener;
+import mmc.com.fifulec.model.OnChallengeConfirm;
 import mmc.com.fifulec.presenter.ChallengeListPresenter;
-import mmc.com.fifulec.view.ChallengeAdapter;
 
 public class ChallangeListActivity extends AppCompatActivity implements ChallengeListContract.View {
 
@@ -34,6 +32,8 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
 
     @Inject
     ChallengeListPresenter presenter;
+    private ChallengeListFragment challenges4MeFragment;
+    private ChallengeListFragment challenges4TheyFragment;
 
 
     @Override
@@ -44,6 +44,8 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
         ButterKnife.bind(this);
         Fifulec.component().inject(this);
 
+        challenges4MeFragment = new ChallengeListFragment();
+        challenges4TheyFragment = new ChallengeListFragment();
 
         presenter.onCreate(this);
     }
@@ -56,30 +58,30 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
 
     @OnClick(R.id.btn_add_challange)
     public void onAddChallengeClicked(){
-        presenter.onAddChallangeClicked();
+        presenter.onAddChallengeClicked();
     }
 
     @Override
     public void setChallenges4Me(List<Challenge> challenges) {
-        ChallengeListFragment theyChallenges = new ChallengeListFragment();
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fl_challenges_4_me, theyChallenges)
+                .replace(R.id.fl_challenges_4_me, challenges4MeFragment)
                 .commit();
 
-        theyChallenges.setChallenges4Adapter(challenges);
+        challenges4MeFragment.setChallenges4Adapter(challenges);
 
     }
 
     @Override
     public void setChallenges4They(List<Challenge> challenges) {
-        ChallengeListFragment myChallanges = new ChallengeListFragment();
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fl_challenges_4_they, myChallanges)
+                .replace(R.id.fl_challenges_4_they, challenges4TheyFragment)
                 .commit();
 
-        myChallanges.setChallenges4Adapter(challenges);
+        challenges4TheyFragment.setChallenges4Adapter(challenges);
     }
 
     @Override
@@ -91,13 +93,10 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
     @Override
     public void setOnChallengeClickListener4Adapter(OnChallengeClickedListener onChallengeClickListener4Adapter){
 
-
-
-
     }
 
     @Override
-    public void showDailogToAcceptChalange(final Challenge challenge) {
+    public void showDaialogToAcceptChallenge(final Challenge challenge) {
         DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -115,6 +114,39 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Czy chcesz zaakceptować wyzwanie?").setPositiveButton("Tak", dialogClickListener)
+                .setNegativeButton("Nie", dialogClickListener).show();
+    }
+
+    @Override
+    public void setOnChallenge4MeClickListener(OnChallengeClickedListener onChallengeClickedListener) {
+        challenges4MeFragment.setOnChallengeClickListener(onChallengeClickedListener);
+    }
+
+    @Override
+    public void openResolveActivity() {
+        Intent i = new Intent(this, ResolveChallengeActivity.class);
+        startActivity(i);
+    }
+
+    @Override
+    public void showConfirmDialog(final OnChallengeConfirm onChallengeConfirm) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        onChallengeConfirm.confirm();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Czy wynik zgadza się?").setPositiveButton("Tak", dialogClickListener)
                 .setNegativeButton("Nie", dialogClickListener).show();
     }
 
