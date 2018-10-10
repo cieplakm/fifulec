@@ -1,8 +1,10 @@
-package mmc.com.fifulec;
+package mmc.com.fifulec.presenter;
 
 import javax.inject.Inject;
 
+import mmc.com.fifulec.utils.AppContext;
 import mmc.com.fifulec.di.AppScope;
+import mmc.com.fifulec.contract.UserContract;
 
 @AppScope
 public class UserPresenter {

@@ -3,7 +3,6 @@ package mmc.com.fifulec.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import javax.inject.Inject;
@@ -13,8 +12,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mmc.com.fifulec.Fifulec;
 import mmc.com.fifulec.R;
-import mmc.com.fifulec.UserContract;
-import mmc.com.fifulec.UserPresenter;
+import mmc.com.fifulec.contract.UserContract;
+import mmc.com.fifulec.presenter.UserPresenter;
 
 public class UserActivity extends AppCompatActivity implements UserContract.View {
 

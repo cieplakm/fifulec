@@ -1,4 +1,4 @@
-package mmc.com.fifulec;
+package mmc.com.fifulec.contract;
 
 import java.util.List;
 

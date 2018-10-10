@@ -1,4 +1,4 @@
-package mmc.com.fifulec;
+package mmc.com.fifulec.contract;
 
 public interface LoginContract {
     interface View {

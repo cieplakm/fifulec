@@ -1,4 +1,4 @@
-package mmc.com.fifulec;
+package mmc.com.fifulec.presenter;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import mmc.com.fifulec.di.AppScope;
 import mmc.com.fifulec.model.User;
+import mmc.com.fifulec.contract.UsersListContract;
 import mmc.com.fifulec.service.CallBack;
 import mmc.com.fifulec.service.UserService;
 

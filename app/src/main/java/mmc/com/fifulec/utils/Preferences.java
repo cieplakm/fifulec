@@ -1,4 +1,4 @@
-package mmc.com.fifulec;
+package mmc.com.fifulec.utils;
 
 import android.content.SharedPreferences;
 

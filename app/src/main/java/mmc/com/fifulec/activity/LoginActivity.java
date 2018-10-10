@@ -1,8 +1,6 @@
 package mmc.com.fifulec.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -14,8 +12,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mmc.com.fifulec.Fifulec;
-import mmc.com.fifulec.LoginContract;
-import mmc.com.fifulec.LoginPresenter;
+import mmc.com.fifulec.contract.LoginContract;
+import mmc.com.fifulec.presenter.LoginPresenter;
 import mmc.com.fifulec.R;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.View {

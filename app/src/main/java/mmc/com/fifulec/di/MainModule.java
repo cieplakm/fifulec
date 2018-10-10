@@ -8,7 +8,6 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import dagger.Module;
 import dagger.Provides;
-import mmc.com.fifulec.AppContext;
 import mmc.com.fifulec.repository.ChallangeRepository;
 import mmc.com.fifulec.repository.FirebaseChallangeRepository;
 import mmc.com.fifulec.repository.FirebaseSecurityRepository;

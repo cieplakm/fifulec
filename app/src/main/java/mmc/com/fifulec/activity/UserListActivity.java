@@ -11,11 +11,11 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import mmc.com.fifulec.AppContext;
+import mmc.com.fifulec.utils.AppContext;
 import mmc.com.fifulec.Fifulec;
 import mmc.com.fifulec.R;
-import mmc.com.fifulec.UserListPresenter;
-import mmc.com.fifulec.UsersListContract;
+import mmc.com.fifulec.presenter.UserListPresenter;
+import mmc.com.fifulec.contract.UsersListContract;
 import mmc.com.fifulec.model.User;
 import mmc.com.fifulec.view.UserListAdapter;
 

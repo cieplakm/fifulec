@@ -1,9 +1,12 @@
-package mmc.com.fifulec;
+package mmc.com.fifulec.presenter;
 
 import javax.inject.Inject;
 
+import mmc.com.fifulec.utils.AppContext;
+import mmc.com.fifulec.utils.Preferences;
 import mmc.com.fifulec.di.AppScope;
 import mmc.com.fifulec.model.User;
+import mmc.com.fifulec.contract.LoginContract;
 import mmc.com.fifulec.service.CallBack;
 import mmc.com.fifulec.service.UserService;
 

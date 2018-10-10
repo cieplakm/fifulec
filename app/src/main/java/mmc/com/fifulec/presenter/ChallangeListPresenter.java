@@ -1,29 +1,31 @@
 package mmc.com.fifulec.presenter;
 
+import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import mmc.com.fifulec.AppContext;
-import mmc.com.fifulec.ChallangeListContract;
+import io.reactivex.functions.Consumer;
+import mmc.com.fifulec.service.ChallangeService;
+import mmc.com.fifulec.utils.AppContext;
+import mmc.com.fifulec.contract.ChallangeListContract;
 import mmc.com.fifulec.di.AppScope;
 import mmc.com.fifulec.model.Challange;
 import mmc.com.fifulec.model.OnUserClickedListener;
 import mmc.com.fifulec.model.User;
-import mmc.com.fifulec.service.CallBack;
-import mmc.com.fifulec.service.ChallangeService;
+
 
 @AppScope
 public class ChallangeListPresenter {
 
     private ChallangeListContract.View view;
 
-    private final ChallangeService challangeService;
+    private final ChallangeService challengeService;
     private AppContext appContext;
 
     @Inject
-    public ChallangeListPresenter(ChallangeService challangeService, AppContext appContext) {
-        this.challangeService = challangeService;
+    public ChallangeListPresenter(ChallangeService challengeService, AppContext appContext) {
+        this.challengeService = challengeService;
         this.appContext = appContext;
     }
 
@@ -34,24 +36,35 @@ public class ChallangeListPresenter {
     }
 
     private void updateChallangesList() {
-        challangeService.getChallangesFromUser(appContext.getUser(), new CallBack<List<Challange>>() {
-            @Override
-            public void response(List<Challange> challanges) {
-                view.setChalanges4Adapter(challanges);
-            }
 
-            @Override
-            public void error() {
+        challengeService.observable(appContext.getUser())
+                .subscribe(new Consumer<Challange>() {
+                    @Override
+                    public void accept(Challange challange) throws Exception {
+                        view.setChalanges4Adapter(Arrays.asList(challange));
+                    }
+                });
 
-            }
-        });
+
+
+//        challengeService.getChallangesFromUser(appContext.getUser(), new CallBack<List<Challange>>() {
+//            @Override
+//            public void response(List<Challange> challanges) {
+//                view.setChalanges4Adapter(challanges);
+//            }
+//
+//            @Override
+//            public void error() {
+//
+//            }
+//        });
     }
 
     public void onAddChallangeClicked() {
         appContext.setOnUserClickedListener(new OnUserClickedListener() {
             @Override
             public void onUserSelect(User user) {
-                challangeService.createChallange(appContext.getUser(), user);
+                challengeService.createChallange(appContext.getUser(), user);
                 updateChallangesList();
             }
         });

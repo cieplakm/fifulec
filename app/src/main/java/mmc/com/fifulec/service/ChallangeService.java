@@ -12,19 +12,25 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Function;
 import mmc.com.fifulec.di.AppScope;
 import mmc.com.fifulec.model.Challange;
 import mmc.com.fifulec.model.User;
 import mmc.com.fifulec.repository.ChallangeRepository;
+import mmc.com.fifulec.repository.UserRepository;
 
 @AppScope
 public class ChallangeService {
 
     private final ChallangeRepository repository;
+    private final UserRepository userRepository;
 
     @Inject
-    public ChallangeService(ChallangeRepository repository) {
+    public ChallangeService(ChallangeRepository repository, UserRepository userRepository) {
         this.repository = repository;
+        this.userRepository = userRepository;
     }
 
 
@@ -65,6 +71,37 @@ public class ChallangeService {
 
             }
         });
+    }
+
+    public Observable<Challange> observable(User user){
+        Observable<Challange> objectObservable = repository.getChallangesFrom(user.getUuid(), null)
+                .flatMap(new Function<Challange, ObservableSource<Challange>>() {
+                    @Override
+                    public ObservableSource<Challange> apply(final Challange challange) throws Exception {
+                        return userRepository.getUserObs(challange.getFromUserUuid()).map(new Function<User, Challange>() {
+                            @Override
+                            public Challange apply(User user) throws Exception {
+                                challange.setFromUserUuid(user.getNick());
+                                return challange;
+                            }
+                        })
+                                .flatMap(new Function<Challange, ObservableSource<Challange>>() {
+                                    @Override
+                                    public ObservableSource<Challange> apply(final Challange challange) throws Exception {
+                                        return userRepository.getUserObs(challange.getToUserUuid()).map(new Function<User, Challange>() {
+                                            @Override
+                                            public Challange apply(User user) throws Exception {
+                                                challange.setToUserUuid(user.getNick());
+                                                return challange;
+                                            }
+                                        });
+
+                                    }
+                                });
+                    }
+                });
+
+        return objectObservable;
     }
 
 
