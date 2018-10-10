@@ -56,7 +56,7 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     }
 
     @Override
-    public void openChallangesList() {
+    public void openChallengesList() {
         Intent intent = new Intent(this, ChallangeListActivity.class);
         startActivity(intent);
     }

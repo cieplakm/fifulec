@@ -12,7 +12,7 @@ public interface UserRepository {
 
     User getUserByUuid(String nick, ValueEventListener listener);
 
-    void getUsers(ValueEventListener valueEventListener);
+    Observable<User> usersObservable();
 
-    Observable<User> getUserObs(String uuid);
+    Observable<User> userObservable(String uuid);
 }

@@ -29,6 +29,6 @@ public class UserPresenter {
     }
 
     public void onChalangesClickedClicked() {
-        view.openChallangesList();
+        view.openChallengesList();
     }
 }

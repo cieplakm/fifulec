@@ -1,6 +1,7 @@
 package mmc.com.fifulec.repository;
 
 import android.support.annotation.NonNull;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,7 +21,7 @@ import mmc.com.fifulec.model.User;
 @AppScope
 public class FirebaseUserRepository implements UserRepository {
 
-    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users");
+    private DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users");
 
     @Inject
     public FirebaseUserRepository() {
@@ -38,13 +39,34 @@ public class FirebaseUserRepository implements UserRepository {
     }
 
     @Override
-    public void getUsers(ValueEventListener valueEventListener) {
-        reference.addListenerForSingleValueEvent(valueEventListener);
+    public Observable<User> usersObservable() {
+        return Observable.create(new ObservableOnSubscribe<User>() {
+            @Override
+            public void subscribe(final ObservableEmitter<User> emitter) throws Exception {
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+                            User value = ds.getValue(User.class);
+                            emitter.onNext(value);
+                        }
+                        emitter.onComplete();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        emitter.onError(new Exception());
+                    }
+                });
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
     }
 
     @Override
-    public Observable<User> getUserObs(final String uuid) {
-        Observable<User> userObservable = Observable.create(new ObservableOnSubscribe<User>() {
+    public Observable<User> userObservable(final String uuid) {
+        return Observable.create(new ObservableOnSubscribe<User>() {
             @Override
             public void subscribe(final ObservableEmitter<User> emitter) throws Exception {
                 reference.child(uuid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -62,10 +84,8 @@ public class FirebaseUserRepository implements UserRepository {
                 });
             }
         })
-                .observeOn(Schedulers.io())
-                .subscribeOn(AndroidSchedulers.mainThread());
-
-        return userObservable;
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
     }
 
 }

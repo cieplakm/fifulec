@@ -6,6 +6,6 @@ public interface UserContract {
 
         void setUserNickTitle(String nick);
 
-        void openChallangesList();
+        void openChallengesList();
     }
 }

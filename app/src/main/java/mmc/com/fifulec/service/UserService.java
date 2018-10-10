@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import mmc.com.fifulec.di.AppScope;
 import mmc.com.fifulec.model.User;
 import mmc.com.fifulec.repository.SecurityRepository;
@@ -72,21 +73,7 @@ public class UserService {
         });
     }
 
-    public void getUsers(final CallBack<List<User>> callBack) {
-        userRepository.getUsers(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                List<User> list = new ArrayList<User>();
-                for (DataSnapshot child: dataSnapshot.getChildren()) {
-                    list.add(child.getValue(User.class));
-                }
-                callBack.response(list);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    public Observable<User> getUsers() {
+        return userRepository.usersObservable();
     }
 }
