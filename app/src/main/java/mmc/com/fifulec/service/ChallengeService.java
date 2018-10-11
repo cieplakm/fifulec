@@ -13,6 +13,8 @@ import io.reactivex.schedulers.Schedulers;
 import mmc.com.fifulec.di.AppScope;
 import mmc.com.fifulec.model.Challenge;
 import mmc.com.fifulec.model.ChallengeStatus;
+import mmc.com.fifulec.model.Score;
+import mmc.com.fifulec.model.Scores;
 import mmc.com.fifulec.model.User;
 import mmc.com.fifulec.repository.ChallengeRepository;
 import mmc.com.fifulec.repository.UserRepository;
@@ -59,7 +61,13 @@ public class ChallengeService {
         challengeRepository.updateChallenge(challenge);
     }
 
-    public void resolveChallange(Challenge challenge) {
+    public void resolveChallenge(Challenge challenge, int fromScore, int toScore) {
+        Scores scores = Scores.builder()
+                .from(new Score(challenge.getFromUserUuid(), fromScore))
+                .to(new Score(challenge.getToUserUuid(), toScore))
+                .build();
+
+        challenge.setScores(scores);
         challenge.setChallengeStatus(ChallengeStatus.NOT_CONFIRMED);
         challengeRepository.updateChallenge(challenge);
     }

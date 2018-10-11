@@ -2,11 +2,12 @@ package mmc.com.fifulec.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Button;
 import android.widget.EditText;
 
 import javax.inject.Inject;
 
+import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -17,10 +18,15 @@ import mmc.com.fifulec.presenter.ResolveChallengePresenter;
 
 public class ResolveChallengeActivity extends AppCompatActivity implements ResolveChallengeContract.View{
 
-    @BindView(R.id.et_score_for_me)
-    EditText etScore4Me;
-    @BindView(R.id.et_score_for_they)
-    EditText etScore4They;
+    @BindView(R.id.et_score_from_user)
+    EditText etScore4FromUser;
+    @BindView(R.id.et_score_to_user)
+    EditText etScore4ToUser;
+
+    @BindView(R.id.tv_from_user_nick)
+    TextView tvFromUserNick;
+    @BindView(R.id.tv_to_user_nick)
+    TextView tvToUserNick;
 
     @Inject
     ResolveChallengePresenter presenter;
@@ -39,6 +45,18 @@ public class ResolveChallengeActivity extends AppCompatActivity implements Resol
 
     @OnClick(R.id.btn_confirm)
     public void onConfirmClicked(){
-        presenter.onConfrimClicked(etScore4Me.getText().toString(), etScore4They.getText().toString());
+        showToast(etScore4FromUser.getText().toString() + " : " + etScore4ToUser.getText().toString());
+        presenter.onConfirmClicked(etScore4FromUser.getText().toString(), etScore4ToUser.getText().toString());
+    }
+
+    @Override
+    public void setTitles(String fromNick, String toNick){
+        tvFromUserNick.setText(fromNick);
+        tvToUserNick.setText(toNick);
+    }
+
+    @Override
+    public void showToast(String s) {
+        Toast.makeText(this, s, Toast.LENGTH_LONG).show();
     }
 }

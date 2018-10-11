@@ -5,6 +5,9 @@ public interface ResolveChallengeContract {
 
         void finish();
 
+        void setTitles(String fromNick, String toNick);
+
+        void showToast(String s);
     }
 
 }

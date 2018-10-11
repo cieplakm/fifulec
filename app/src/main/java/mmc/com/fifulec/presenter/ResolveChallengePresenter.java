@@ -5,8 +5,6 @@ import javax.inject.Inject;
 import mmc.com.fifulec.contract.ResolveChallengeContract;
 import mmc.com.fifulec.di.AppScope;
 import mmc.com.fifulec.model.Challenge;
-import mmc.com.fifulec.model.Score;
-import mmc.com.fifulec.model.Scores;
 import mmc.com.fifulec.service.ChallengeService;
 import mmc.com.fifulec.utils.AppContext;
 
@@ -27,32 +25,20 @@ public class ResolveChallengePresenter {
 
     public void onCreate(ResolveChallengeContract.View view){
         this.view = view;
+        Challenge challenge = appContext.getChallenge();
+        view.setTitles(challenge.getFromUserNick(), challenge.getToUserNick());
     }
 
-    public void onConfrimClicked(String me, String they) {
-        int intMe = Integer.parseInt(me);
-        int intThey = Integer.parseInt(they);
+    public void onConfirmClicked(String from, String to) {
+        int scoreFrom = Integer.parseInt(from);
+        int scoreTo = Integer.parseInt(to);
 
         Challenge challenge = appContext.getChallenge();
 
-        Scores build;
-        if (appContext.getUser().getUuid().equals(challenge.getFromUserUuid())){
-            build = new Scores()
-                    .builder()
-                    .from(new Score(challenge.getFromUserUuid(), intMe))
-                    .to(new Score(challenge.getToUserUuid(), intThey))
-                    .build();
-        }else {
-            build = new Scores()
-                    .builder()
-                    .from(new Score(challenge.getToUserUuid(), intThey))
-                    .to(new Score(challenge.getFromUserUuid(), intMe))
-                    .build();
-        }
 
-        challenge.setScores(build);
 
-        challengeService.resolveChallange(challenge);
+
+        challengeService.resolveChallenge(challenge, scoreFrom, scoreTo);
 
         view.finish();
     }

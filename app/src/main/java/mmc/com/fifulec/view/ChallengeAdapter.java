@@ -1,7 +1,6 @@
 package mmc.com.fifulec.view;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -50,7 +49,7 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
                 stattitle="Zaakceptowany";
                 break;
             case NOT_ACCEPTED:
-                stattitle="Nie zaakceptowany";
+                stattitle="Oczekuje na akceptację";
                 break;
             case FINISHED:
                 stattitle="Zakończony";
@@ -66,8 +65,11 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
         }
 
         if (challenge.getScores() != null && (challenge.getChallengeStatus() == ChallengeStatus.NOT_CONFIRMED || challenge.getChallengeStatus() == ChallengeStatus.FINISHED)){
-            viewHolder.tvMyScore.setText(Integer.toString(challenge.getScores().getFrom().getValue()));
-            viewHolder.tvTheyScore.setText(Integer.toString(challenge.getScores().getTo().getValue()));
+            viewHolder.tvFromScore.setText(Integer.toString(challenge.getScores().getFrom().getValue()));
+            viewHolder.tvToScore.setText(Integer.toString(challenge.getScores().getTo().getValue()));
+        }else {
+            viewHolder.tvFromScore.setText("-");
+            viewHolder.tvToScore.setText("-");
         }
 
         viewHolder.tvAccepted.setText(stattitle);
@@ -102,10 +104,10 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
         TextView tvToUser;
         @BindView(R.id.tv_accepted)
         TextView tvAccepted;
-        @BindView(R.id.tv_my_score)
-        TextView tvMyScore;
-        @BindView(R.id.tv_they_score)
-        TextView tvTheyScore;
+        @BindView(R.id.tv_from_score)
+        TextView tvFromScore;
+        @BindView(R.id.tv_to_score)
+        TextView tvToScore;
          View view;
 
         public ViewHolder(@NonNull View itemView) {
