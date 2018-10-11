@@ -51,12 +51,6 @@ public class NotifiService extends Service {
                                         .setContentTitle("Challenge!")
                                         .setContentText("Challenge od " + challenge.getFromUserNick());
 
-                        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
-                        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT);
-                        builder.setContentIntent(contentIntent);
-
                         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                         manager.notify(0, builder.build());
                     }

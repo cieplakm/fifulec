@@ -83,8 +83,9 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
                 challengesReference.addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        Challenge challenge = dataSnapshot.getValue(Challenge.class);
-                        emitter.onNext(challenge);
+                        for (DataSnapshot ds : dataSnapshot.getChildren()){
+                            emitter.onNext(ds.getValue(Challenge.class));
+                        }
                     }
 
                     @Override
