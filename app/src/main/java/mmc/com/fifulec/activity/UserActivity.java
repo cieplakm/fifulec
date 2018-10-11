@@ -11,6 +11,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import mmc.com.fifulec.Fifulec;
+import mmc.com.fifulec.NotifiService;
 import mmc.com.fifulec.R;
 import mmc.com.fifulec.contract.UserContract;
 import mmc.com.fifulec.presenter.UserPresenter;
@@ -36,7 +37,7 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
 
         ButterKnife.bind(this);
         Fifulec.component().inject(this);
-
+        startService(new Intent(this, NotifiService.class));
         presenter.onCreate(this);
     }
 

@@ -22,6 +22,9 @@
         <activity android:name=".activity.UserListActivity" />
         <activity android:name=".activity.ChallangeListActivity" />
         <activity android:name=".activity.ResolveChallengeActivity"></activity>
+        <service android:name=".NotifiService" />
+
+
     </application>
 
 </manifest>

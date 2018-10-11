@@ -12,4 +12,6 @@ public interface ChallengeRepository {
     Observable<Challenge> getChallengesFromUser(String uuid);
 
     Observable<Challenge> getChallengesToUser(String uuid);
+
+    Observable<Challenge> listeningForChallengeLive(String uuid);
 }
