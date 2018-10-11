@@ -21,9 +21,10 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     TextView tvUserNick;
     @BindView(R.id.tv_chalanges_amount)
     TextView tvUChallengesAmount;
-
-
-
+    @BindView(R.id.tv_gools_amount)
+    TextView tvGoolsAmount;
+    @BindView(R.id.tv_wins_amount)
+    TextView tvWinsAmount;
 
     @Inject
     UserPresenter presenter;
@@ -68,5 +69,15 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     @Override
     public void setAmountChallenges(int size) {
         tvUChallengesAmount.setText(Integer.toString(size));
+    }
+
+    @Override
+    public void setGoolsAmount(String goolsAmount){
+        tvGoolsAmount.setText(goolsAmount);
+    }
+
+    @Override
+    public void setWinsAmount(String wins) {
+        tvWinsAmount.setText(wins);
     }
 }

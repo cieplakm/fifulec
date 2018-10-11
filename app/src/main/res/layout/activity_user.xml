@@ -51,4 +51,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_users_list" />
+    <TextView
+            android:id="@+id/tv_gools_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="112dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.258" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/tv_chalanges_amount"/>
+    <TextView
+            android:id="@+id/tv_wins_amount"
+            android:layout_width="wrap_content"
+            android:layout_height="112dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="0.59"
+            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/tv_gools_amount"/>
 </android.support.constraint.ConstraintLayout>

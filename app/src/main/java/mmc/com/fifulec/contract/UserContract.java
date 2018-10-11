@@ -9,5 +9,9 @@ public interface UserContract {
         void openChallengesList();
 
         void setAmountChallenges(int size);
+
+        void setGoolsAmount(String goolsAmount);
+
+        void setWinsAmount(String wins);
     }
 }
