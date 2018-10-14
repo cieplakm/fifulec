@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:628956538968:android:595eea68217376c9",
         "android_client_info": {
-          "package_name": "mmc.com.fifulec"
+          "package_name": "com.mmc.fifulec"
         }
       },
       "oauth_client": [
@@ -18,7 +18,7 @@
           "client_id": "628956538968-gteegmof6b0rf9h1nisl4kcpc5sv7kgo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "mmc.com.fifulec",
+            "package_name": "com.mmc.fifulec",
             "certificate_hash": "7d771d676ff132f1df7f53c4da28a5f08863306b"
           }
         },
