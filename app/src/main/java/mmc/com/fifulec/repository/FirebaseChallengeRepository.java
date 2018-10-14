@@ -80,27 +80,13 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
         return Observable.create(new ObservableOnSubscribe<Challenge>() {
             @Override
             public void subscribe(final ObservableEmitter<Challenge> emitter) throws Exception {
-                challengesReference.addChildEventListener(new ChildEventListener() {
+                challengesReference.addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for (DataSnapshot ds : dataSnapshot.getChildren()){
-                            emitter.onNext(ds.getValue(Challenge.class));
+                            Challenge value = ds.getValue(Challenge.class);
+                            emitter.onNext(value);
                         }
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                     }
 
                     @Override
