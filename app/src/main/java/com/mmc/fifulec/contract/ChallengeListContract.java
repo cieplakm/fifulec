@@ -23,5 +23,7 @@ public interface ChallengeListContract {
         void openResolveActivity();
 
         void showConfirmDialog(OnChallengeConfirm onChallengeConfirm);
+
+        void showToast(String message);
     }
 }

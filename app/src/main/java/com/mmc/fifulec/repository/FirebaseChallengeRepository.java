@@ -86,6 +86,7 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
                             Challenge value = ds.getValue(Challenge.class);
                             emitter.onNext(value);
                         }
+                        emitter.onComplete();
                     }
 
                     @Override

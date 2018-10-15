@@ -6,6 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -106,7 +107,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
-                        //No button clicked
+                        presenter.onRejectClicked(challenge);
                         break;
                 }
             }
@@ -139,7 +140,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
-                        //No button clicked
+                        onChallengeConfirm.notConfirmed();
                         break;
                 }
             }
@@ -148,6 +149,11 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage("Czy wynik zgadza się?").setPositiveButton("Tak", dialogClickListener)
                 .setNegativeButton("Nie", dialogClickListener).show();
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 }

@@ -13,6 +13,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import com.mmc.fifulec.R;
+import com.mmc.fifulec.activity.Closeable;
 import com.mmc.fifulec.model.OnUserClickedListener;
 import com.mmc.fifulec.model.User;
 
@@ -20,6 +21,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     private List<User> users;
     private OnUserClickedListener onUserClickedListener;
+    private Closeable closable;
 
     public UserListAdapter(OnUserClickedListener onUserClickedListener) {
         this.onUserClickedListener = onUserClickedListener;
@@ -46,6 +48,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
             public void onClick(View v) {
                 if (onUserClickedListener != null) {
                     onUserClickedListener.onUserSelect(user);
+                    closable.close();
                 }
             }
         });
@@ -62,6 +65,10 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     public void setOnUserClickedListener(OnUserClickedListener onUserClickedListener) {
         this.onUserClickedListener = onUserClickedListener;
+    }
+
+    public void setClosable(Closeable closable) {
+        this.closable = closable;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

@@ -45,10 +45,10 @@ public class NotifiService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        subscribe = challengeRepository.listeningForChallengeLive(appContext.getUser().getUuid())
-                .toList()
+        challengeRepository.listeningForChallengeLive(appContext.getUser().getUuid())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
+                .toList()
                 .subscribe(new Consumer<List<Challenge>>() {
                     @Override
                     public void accept(List<Challenge> challenges) throws Exception {
@@ -91,6 +91,6 @@ public class NotifiService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        subscribe.dispose();
+
     }
 }

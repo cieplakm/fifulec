@@ -1,6 +1,7 @@
 package com.mmc.fifulec.service;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -168,4 +169,17 @@ public class ChallengeService {
     }
 
 
+    public Observable<Challenge> getNotAcceptedChallenge(User from, final User to) {
+        return challengeRepository.getChallengesFromUser(from.getUuid())
+                .filter(new Predicate<Challenge>() {
+                    @Override
+                    public boolean test(Challenge challenge) throws Exception {
+                        return challenge.getChallengeStatus() == ChallengeStatus.NOT_ACCEPTED
+                                && challenge.getToUserUuid().equals(to.getUuid());
+                    }
+                })
+                .timeout(5000, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io());
+    }
 }

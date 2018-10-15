@@ -8,14 +8,12 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="35dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
@@ -25,7 +23,7 @@
 
         <TextView
             android:id="@+id/tv_from_user_nick"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
@@ -41,7 +39,7 @@
 
         <TextView
             android:id="@+id/tv_to_user_nick"
-            android:layout_width="1dp"
+            android:layout_width="wrap_content"
             android:layout_height="35dp"
             android:layout_weight="1"
             android:gravity="center_vertical"
@@ -50,64 +48,67 @@
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            android:orientation="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" android:id="@+id/linearLayout4">
+        android:id="@+id/linearLayout4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout">
 
         <TextView
-                android:id="@+id/tv_accepted"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Nie zaakceptowano"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+            android:id="@+id/tv_accepted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nie zaakceptowano"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
     <LinearLayout
-            android:layout_width="0dp"
+        android:id="@+id/linearLayout8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@+id/view"
+        app:layout_constraintStart_toEndOf="@+id/linearLayout4">
+
+        <TextView
+            android:id="@+id/tv_from_score"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-            app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toStartOf="@+id/linearLayout4"
-            android:layout_marginEnd="8dp">
+            android:gravity="right"
+            android:text="-"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-                android:id="@+id/tv_from_score"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:text="-"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+            android:layout_width="10dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+
+            android:text=":"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-                android:layout_width="10dp"
-                android:layout_height="wrap_content"
-                android:text=":"
-
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
-
-        <TextView
-                android:id="@+id/tv_to_score"
-                android:layout_width="50dp"
-                android:layout_height="wrap_content"
-                android:text="-"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"/>
+            android:id="@+id/tv_to_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
     </LinearLayout>
 
     <View
+        android:id="@+id/view"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="8dp"

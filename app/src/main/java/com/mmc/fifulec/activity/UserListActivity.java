@@ -19,7 +19,7 @@ import com.mmc.fifulec.contract.UsersListContract;
 import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.view.UserListAdapter;
 
-public class UserListActivity extends AppCompatActivity implements UsersListContract.View {
+public class UserListActivity extends AppCompatActivity implements UsersListContract.View, Closeable {
 
     @BindView(R.id.rv_user_list)
     RecyclerView recyclerView;
@@ -33,6 +33,11 @@ public class UserListActivity extends AppCompatActivity implements UsersListCont
     private UserListAdapter userListAdapter;
 
     @Override
+    public void close() {
+        finish();
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_list);
@@ -43,6 +48,7 @@ public class UserListActivity extends AppCompatActivity implements UsersListCont
         presenter.onCreate(this);
 
         userListAdapter = new UserListAdapter(appContext.getOnUserClickedListener());
+        userListAdapter.setClosable(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(userListAdapter);
     }

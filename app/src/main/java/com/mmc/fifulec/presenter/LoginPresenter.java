@@ -84,6 +84,7 @@ public class LoginPresenter {
                     preferences.putNick(nick);
                     preferences.putPassword(pass);
                     view.showToast("Stworzono usera!");
+                    view.openUserActivity();
                 }
             }
 
