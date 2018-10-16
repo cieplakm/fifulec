@@ -1,10 +1,11 @@
 package com.mmc.fifulec.repository;
 
-import com.google.firebase.database.ValueEventListener;
+
+import io.reactivex.Observable;
 
 public interface SecurityRepository {
 
-    String getUuidByNick(String nick, ValueEventListener listener);
+    Observable<String> getUuidByNick(String nick);
 
     void save(String nick, String uuid);
 }

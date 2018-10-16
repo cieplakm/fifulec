@@ -10,6 +10,9 @@ import com.mmc.fifulec.contract.LoginContract;
 import com.mmc.fifulec.service.CallBack;
 import com.mmc.fifulec.service.UserService;
 
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+
 @AppScope
 public class LoginPresenter {
 
@@ -17,7 +20,6 @@ public class LoginPresenter {
     private Preferences preferences;
     private AppContext appContext;
     private LoginContract.View view;
-
 
     @Inject
     public LoginPresenter(UserService userService,
@@ -33,69 +35,48 @@ public class LoginPresenter {
 
         String nick = preferences.getNick();
         if (nick != null){
-            userService.getUUID(nick, new CallBack<String>() {
-                @Override
-                public void response(String s) {
-                    userService.getUser(s, new CallBack<User>() {
-                        @Override
-                        public void response(User user) {
-                            appContext.setUser(user);
-                            view.openUserActivity();
-                        }
-
-                        @Override
-                        public void error() {
-
-                        }
-                    });
-                }
-
-                @Override
-                public void error() {
-
-                }
-            });
 
         }
     }
 
     public void onLoginClicked(final String nick, final String pass) {
-        userService.getUUID(nick, new CallBack<String>() {
-            @Override
-            public void response(final String uuid) {
-                if (uuid != null){
-                    userService.getUser(uuid, new CallBack<User>() {
-                        @Override
-                        public void response(User user) {
-                            view.showToast("Witaj! " + user.getNick());
-                            appContext.setUser(user);
-                            preferences.putNick(user.getNick());
-                            preferences.putPassword(user.getPassword());
-                            view.openUserActivity();
-                        }
+        final String properNick = nick.replace(" ", "");
+        final String properPass = pass.replace(" ", "");
 
-                        @Override
-                        public void error() {
-
-                        }
-                    });
-                }else {
-                    userService.create(nick, pass);
-                    preferences.putNick(nick);
-                    preferences.putPassword(pass);
-                    view.showToast("Stworzono usera!");
-                    view.openUserActivity();
-                }
-            }
-
-            @Override
-            public void error() {
-                userService.create(nick, pass);
-            }
-        });
-
+        userService.userByNick(properNick).subscribe(getLoginObserver(properNick, properPass));
 
     }
 
+    private Observer<? super User> getLoginObserver(final String properNick, final String properPass) {
+        return  new Observer<User>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(User user) {
+                view.showToast("Witaj! " + user.getNick());
+                appContext.setUser(user);
+                preferences.putNick(user.getNick());
+                preferences.putPassword(user.getPassword());
+                view.openUserActivity();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                userService.create(properNick, properPass);
+                preferences.putNick(properNick);
+                preferences.putPassword(properPass);
+                view.showToast("Stworzono usera!");
+                view.openUserActivity();
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        };
+    }
 
 }

@@ -12,6 +12,9 @@ import java.util.UUID;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.functions.Function;
+
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.repository.SecurityRepository;
@@ -56,19 +59,14 @@ public class UserService {
         } );
     }
 
-    public void getUUID(String nick, final CallBack<String> callBack) {
-        securityRepository.getUuidByNick(nick, new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String uuid = dataSnapshot.getValue(String.class);
-                callBack.response(uuid);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+    public Observable<User> userByNick(String nick) {
+        return securityRepository.getUuidByNick(nick)
+                .flatMap(new Function<String, ObservableSource<User>>() {
+                    @Override
+                    public ObservableSource<User> apply(String uuid) throws Exception {
+                        return userRepository.userObservable(uuid);
+                    }
+                });
     }
 
     public Observable<User> getUsers() {
