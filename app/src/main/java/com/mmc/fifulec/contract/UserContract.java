@@ -2,7 +2,6 @@ package com.mmc.fifulec.contract;
 
 public interface UserContract {
     interface View {
-        void openUserListActivity();
 
         void setUserNickTitle(String nick);
 
@@ -13,5 +12,9 @@ public interface UserContract {
         void setGoolsAmount(String goolsAmount);
 
         void setWinsAmount(String wins);
+
+        void setDrawAmount(String draws);
+
+        void setLoseAmount(String loses);
     }
 }

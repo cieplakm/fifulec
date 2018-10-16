@@ -5,7 +5,7 @@ import io.reactivex.Observable;
 
 public interface SecurityRepository {
 
-    Observable<String> getUuidByNick(String nick);
+    Observable<String> uuidByNickObservable(String nick);
 
     void save(String nick, String uuid);
 }

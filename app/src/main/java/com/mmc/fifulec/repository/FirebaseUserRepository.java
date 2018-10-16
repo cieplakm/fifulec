@@ -65,7 +65,7 @@ public class FirebaseUserRepository implements UserRepository {
     }
 
     @Override
-    public Observable<User> userObservable(final String uuid) {
+    public Observable<User> userByUuidObservable(final String uuid) {
         return Observable.create(new ObservableOnSubscribe<User>() {
             @Override
             public void subscribe(final ObservableEmitter<User> emitter) throws Exception {

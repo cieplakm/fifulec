@@ -26,6 +26,10 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     TextView tvGoolsAmount;
     @BindView(R.id.tv_wins_amount)
     TextView tvWinsAmount;
+    @BindView(R.id.tv_draws_amount)
+    TextView tvDrawsAmount;
+    @BindView(R.id.tv_loses_amount)
+    TextView tvLosesAmount;
 
     @Inject
     UserPresenter presenter;
@@ -37,23 +41,12 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
 
         ButterKnife.bind(this);
         Fifulec.component().inject(this);
-        startService(new Intent(this, NotifiService.class));
         presenter.onCreate(this);
     }
 
-    @OnClick(R.id.btn_users_list)
-    public void onUsersListClicked(){
-        presenter.onUserListClicked();
-    }
     @OnClick(R.id.btn_challanges)
     public void onChalangesClicked(){
-        presenter.onChalangesClickedClicked();
-    }
-
-    @Override
-    public void openUserListActivity() {
-        Intent intent = new Intent(this, UserListActivity.class);
-        startActivity(intent);
+        presenter.onChallengesClickedClicked();
     }
 
     @Override
@@ -80,5 +73,15 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     @Override
     public void setWinsAmount(String wins) {
         tvWinsAmount.setText(wins);
+    }
+
+    @Override
+    public void setDrawAmount(String draws) {
+        tvDrawsAmount.setText(draws);
+    }
+
+    @Override
+    public void setLoseAmount(String loses) {
+        tvLosesAmount.setText(loses);
     }
 }

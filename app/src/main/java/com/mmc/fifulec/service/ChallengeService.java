@@ -83,7 +83,7 @@ public class ChallengeService {
                 .flatMap(new Function<Challenge, ObservableSource<Challenge>>() {
                     @Override
                     public ObservableSource<Challenge> apply(final Challenge challenge) throws Exception {
-                        return userRepository.userObservable(challenge.getFromUserUuid())
+                        return userRepository.userByUuidObservable(challenge.getFromUserUuid())
                                 .filter(new Predicate<User>() {
                                     @Override
                                     public boolean test(User user) throws Exception {
@@ -102,7 +102,7 @@ public class ChallengeService {
                 .flatMap(new Function<Challenge, ObservableSource<Challenge>>() {
                     @Override
                     public ObservableSource<Challenge> apply(final Challenge challange1) throws Exception {
-                        return userRepository.userObservable(challange1.getToUserUuid())
+                        return userRepository.userByUuidObservable(challange1.getToUserUuid())
                                 .filter(new Predicate<User>() {
                                     @Override
                                     public boolean test(User user) throws Exception {
@@ -128,7 +128,7 @@ public class ChallengeService {
                 .flatMap(new Function<Challenge, ObservableSource<Challenge>>() {
                     @Override
                     public ObservableSource<Challenge> apply(final Challenge challenge) throws Exception {
-                        return userRepository.userObservable(challenge.getFromUserUuid())
+                        return userRepository.userByUuidObservable(challenge.getFromUserUuid())
                                 .filter(new Predicate<User>() {
                                     @Override
                                     public boolean test(User user) throws Exception {
@@ -147,7 +147,7 @@ public class ChallengeService {
                 .flatMap(new Function<Challenge, ObservableSource<Challenge>>() {
                     @Override
                     public ObservableSource<Challenge> apply(final Challenge challange1) throws Exception {
-                        return userRepository.userObservable(challange1.getToUserUuid())
+                        return userRepository.userByUuidObservable(challange1.getToUserUuid())
                                 .filter(new Predicate<User>() {
                                     @Override
                                     public boolean test(User user) throws Exception {

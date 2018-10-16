@@ -1,12 +1,5 @@
 package com.mmc.fifulec.service;
 
-import android.support.annotation.NonNull;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-
-import com.google.firebase.database.ValueEventListener;
-
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -44,27 +37,12 @@ public class UserService {
         userRepository.saveUser(user);
     }
 
-    public void getUser(String uuid, final CallBack<User> callBack){
-        userRepository.getUserByUuid(uuid, new ValueEventListener(){
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                User value = dataSnapshot.getValue(User.class);
-                callBack.response(value);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        } );
-    }
-
     public Observable<User> userByNick(String nick) {
-        return securityRepository.getUuidByNick(nick)
+        return securityRepository.uuidByNickObservable(nick)
                 .flatMap(new Function<String, ObservableSource<User>>() {
                     @Override
                     public ObservableSource<User> apply(String uuid) throws Exception {
-                        return userRepository.userObservable(uuid);
+                        return userRepository.userByUuidObservable(uuid);
                     }
                 });
     }

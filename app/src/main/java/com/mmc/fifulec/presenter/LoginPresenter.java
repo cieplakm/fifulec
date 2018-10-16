@@ -1,17 +1,17 @@
 package com.mmc.fifulec.presenter;
 
-import javax.inject.Inject;
-
-import com.mmc.fifulec.utils.AppContext;
-import com.mmc.fifulec.utils.Preferences;
+import com.mmc.fifulec.contract.LoginContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.User;
-import com.mmc.fifulec.contract.LoginContract;
-import com.mmc.fifulec.service.CallBack;
 import com.mmc.fifulec.service.UserService;
+import com.mmc.fifulec.utils.AppContext;
+import com.mmc.fifulec.utils.Preferences;
+
+import javax.inject.Inject;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Predicate;
 
 @AppScope
 public class LoginPresenter {
@@ -34,8 +34,10 @@ public class LoginPresenter {
         this.view = view;
 
         String nick = preferences.getNick();
-        if (nick != null){
-
+        if (nick != null) {
+            userService
+                    .userByNick(nick)
+                    .subscribe(getLoginObserver());
         }
     }
 
@@ -43,12 +45,20 @@ public class LoginPresenter {
         final String properNick = nick.replace(" ", "");
         final String properPass = pass.replace(" ", "");
 
-        userService.userByNick(properNick).subscribe(getLoginObserver(properNick, properPass));
-
+        userService
+                .userByNick(properNick)
+                .retry(new Predicate<Throwable>() {
+                    @Override
+                    public boolean test(Throwable throwable) throws Exception {
+                        userService.create(properNick, properPass);
+                        return true;
+                    }
+                })
+                .subscribe(getLoginObserver());
     }
 
-    private Observer<? super User> getLoginObserver(final String properNick, final String properPass) {
-        return  new Observer<User>() {
+    private Observer<? super User> getLoginObserver() {
+        return new Observer<User>() {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -56,7 +66,7 @@ public class LoginPresenter {
 
             @Override
             public void onNext(User user) {
-                view.showToast("Witaj! " + user.getNick());
+                view.showToast("Witaj " + user.getNick());
                 appContext.setUser(user);
                 preferences.putNick(user.getNick());
                 preferences.putPassword(user.getPassword());
@@ -65,11 +75,7 @@ public class LoginPresenter {
 
             @Override
             public void onError(Throwable e) {
-                userService.create(properNick, properPass);
-                preferences.putNick(properNick);
-                preferences.putPassword(properPass);
-                view.showToast("Stworzono usera!");
-                view.openUserActivity();
+
             }
 
             @Override

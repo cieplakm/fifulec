@@ -9,12 +9,14 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.widget.Toast;
 
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.repository.ChallengeRepository;
@@ -44,11 +46,18 @@ public class NotifiService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Toast.makeText(this, "Service!", Toast.LENGTH_SHORT).show();
 
         challengeRepository.listeningForChallengeLive(appContext.getUser().getUuid())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .toList()
+                .filter(new Predicate<List<Challenge>>() {
+                    @Override
+                    public boolean test(List<Challenge> challenges) throws Exception {
+                        return challenges.size() > 0;
+                    }
+                })
                 .subscribe(new Consumer<List<Challenge>>() {
                     @Override
                     public void accept(List<Challenge> challenges) throws Exception {

@@ -1,10 +1,9 @@
 package com.mmc.fifulec.presenter;
 
-import android.support.annotation.Nullable;
-
 import com.mmc.fifulec.contract.ChallengeListContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.Challenge;
+import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.model.OnChallengeClickedListener;
 import com.mmc.fifulec.model.OnChallengeConfirm;
 import com.mmc.fifulec.model.OnUserClickedListener;
@@ -17,10 +16,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Predicate;
 
 
 @AppScope
@@ -44,7 +42,6 @@ public class ChallengeListPresenter {
         view.setOnChallenge4MeClickListener(new OnChallengeClickedListener() {
             @Override
             public void onChallengeSelect(Challenge challenge) {
-                view.showToast("ch status: " + challenge.getChallengeStatus().toString() + "------ moj UUID:" + appContext.getUser().getUuid() + "-------- uuid from: " + challenge.getFromUserUuid());
                 switch (challenge.getChallengeStatus()) {
                     case ACCEPTED:
                         if (appContext.getUser().getUuid().equals(challenge.getFromUserUuid())){
@@ -52,7 +49,9 @@ public class ChallengeListPresenter {
                         }
                         break;
                     case NOT_ACCEPTED:
-                        showQuestionAboutAcceptance(challenge);
+                        if (appContext.getUser().getUuid().equals(challenge.getToUserUuid())) {
+                            showQuestionAboutAcceptance(challenge);
+                        }
                         break;
                     case FINISHED:
                         break;
@@ -61,6 +60,10 @@ public class ChallengeListPresenter {
                     case NOT_CONFIRMED:
                         if (appContext.getUser().getUuid().equals(challenge.getToUserUuid())){
                             confirm(challenge);
+                        }else {
+                            if (appContext.getUser().getUuid().equals(challenge.getFromUserUuid())){
+                                resolveChallenge(challenge);
+                            }
                         }
                         break;
                 }
@@ -98,6 +101,14 @@ public class ChallengeListPresenter {
 
     private void updateChallengesList() {
         challengeService.challengeFromUser(appContext.getUser())
+                .filter(new Predicate<Challenge>() {
+                    @Override
+                    public boolean test(Challenge challenge) throws Exception {
+                        ChallengeStatus challengeStatus = challenge.getChallengeStatus();
+                        return challengeStatus != ChallengeStatus.FINISHED ||
+                        challengeStatus!=ChallengeStatus.REJECTED;
+                    }
+                })
                 .toList()
                 .subscribe(new SingleObserver<List<Challenge>>() {
                     @Override
@@ -120,10 +131,17 @@ public class ChallengeListPresenter {
                 .sorted(new Comparator<Challenge>() {
                     @Override
                     public int compare(Challenge o1, Challenge o2) {
-                        int x = getChallengeStatusWeight(o1);
-                        int y = getChallengeStatusWeight(o2);
-
-                        return x>y ? -1 : x==y ? 0 : 1;
+                        int x = ChallengeHelper.getChallengeStatusWeight(o1);
+                        int y = ChallengeHelper.getChallengeStatusWeight(o2);
+                        return Integer.compare(x, y);
+                    }
+                })
+                .filter(new Predicate<Challenge>() {
+                    @Override
+                    public boolean test(Challenge challenge) throws Exception {
+                        ChallengeStatus challengeStatus = challenge.getChallengeStatus();
+                        return challengeStatus != ChallengeStatus.FINISHED ||
+                                challengeStatus!=ChallengeStatus.REJECTED;
                     }
                 })
                 .toList()
@@ -145,17 +163,6 @@ public class ChallengeListPresenter {
                 });
     }
 
-    private int getChallengeStatusWeight(Challenge o1) {
-        switch (o1.getChallengeStatus()){
-            case NOT_CONFIRMED: return 5;
-            case ACCEPTED: return 4;
-            case NOT_ACCEPTED: return 3;
-            case FINISHED: return 2;
-            case REJECTED: return 1;
-        }
-        return 0;
-    }
-
     public void onAddChallengeClicked() {
         appContext.setOnUserClickedListener(new OnUserClickedListener() {
             @Override
@@ -171,10 +178,8 @@ public class ChallengeListPresenter {
 
                             @Override
                             public void onSuccess(Long aLong) {
-
-
                                 if (aLong == null || aLong == 0){
-                                    view.showToast("Utworzenie wyzwania - null");
+                                    view.showToast("Wyzwanie wysłane");
                                     challengeService.createChallenge(appContext.getUser(), user);
                                     updateChallengesList();
                                 }else {
@@ -195,6 +200,7 @@ public class ChallengeListPresenter {
 
     public void onChallengeAccepted(Challenge challenge) {
         challengeService.acceptChallenge(challenge);
+        updateChallengesList();
     }
 
     public void onResume() {
@@ -203,6 +209,7 @@ public class ChallengeListPresenter {
 
     public void onRejectClicked(Challenge challenge) {
         rejectChallenge(challenge);
+        updateChallengesList();
     }
 
     public void onPause() {

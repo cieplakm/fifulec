@@ -49,7 +49,7 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
                 stattitle="Zaakceptowany";
                 break;
             case NOT_ACCEPTED:
-                stattitle="Oczekuje na akceptację";
+                stattitle="Czeka na akceptację";
                 break;
             case FINISHED:
                 stattitle="Zakończony";
@@ -58,7 +58,7 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
                 stattitle="Odrzucony";
                 break;
             case NOT_CONFIRMED:
-                stattitle="Oczekuje na potwierdzenie";
+                stattitle="Czeka na potwierdzenie";
                 break;
 
 

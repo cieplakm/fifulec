@@ -2,8 +2,6 @@ package com.mmc.fifulec.model;
 
 import com.google.firebase.database.Exclude;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,4 +23,5 @@ public class Challenge {
     private ChallengeStatus challengeStatus;
     private int amountMatches;
     private Scores scores;
+    private long timestamp;
 }

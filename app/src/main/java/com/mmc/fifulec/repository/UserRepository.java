@@ -14,5 +14,5 @@ public interface UserRepository {
 
     Observable<User> usersObservable();
 
-    Observable<User> userObservable(String uuid);
+    Observable<User> userByUuidObservable(String uuid);
 }

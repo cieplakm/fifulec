@@ -6,16 +6,6 @@
                                              android:layout_height="match_parent"
                                              tools:context=".activity.UserActivity">
 
-    <ImageButton
-            android:id="@+id/btn_users_list"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="8dp"
-            android:scaleType="fitXY"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@drawable/ic_users" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout7"/>
-
     <TextView
             android:id="@+id/tv_user_nick"
             android:layout_width="wrap_content"
@@ -30,13 +20,17 @@
             app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageButton
-            android:id="@+id/btn_challanges"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/ic_stars_black_24dp" android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/linearLayout7"/>
+        android:id="@+id/btn_challanges"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="180dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/ic_stars_black_24dp" />
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -50,13 +44,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Liczba zakonczonych meczy"/>
+
         <TextView
-                android:id="@+id/tv_chalanges_amount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:layout_weight="1"
-        />
+            android:id="@+id/tv_chalanges_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="0" />
     </LinearLayout>
 
     <LinearLayout
@@ -71,13 +65,13 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Liczba strzelonych goli"/>
+
         <TextView
-                android:id="@+id/tv_gools_amount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:layout_weight="1"
-        />
+            android:id="@+id/tv_gools_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="0" />
     </LinearLayout>
 
     <LinearLayout
@@ -92,13 +86,65 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Liczba zwycięstw"/>
+
         <TextView
-                android:id="@+id/tv_wins_amount"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="TextView"
-                android:layout_weight="1"
-        />
+            android:id="@+id/tv_wins_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="0" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout9"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout7">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Liczba remisów" />
+
+        <TextView
+            android:id="@+id/tv_draws_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="0" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout19"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout9">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Liczba przegranych" />
+
+        <TextView
+            android:id="@+id/tv_loses_amount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="0" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
