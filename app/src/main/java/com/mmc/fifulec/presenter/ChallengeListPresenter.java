@@ -18,6 +18,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -43,9 +44,12 @@ public class ChallengeListPresenter {
         view.setOnChallenge4MeClickListener(new OnChallengeClickedListener() {
             @Override
             public void onChallengeSelect(Challenge challenge) {
+                view.showToast("ch status: " + challenge.getChallengeStatus().toString() + "------ moj UUID:" + appContext.getUser().getUuid() + "-------- uuid from: " + challenge.getFromUserUuid());
                 switch (challenge.getChallengeStatus()) {
                     case ACCEPTED:
-                        resolveChallenge(challenge);
+                        if (appContext.getUser().getUuid().equals(challenge.getFromUserUuid())){
+                            resolveChallenge(challenge);
+                        }
                         break;
                     case NOT_ACCEPTED:
                         showQuestionAboutAcceptance(challenge);
@@ -53,10 +57,11 @@ public class ChallengeListPresenter {
                     case FINISHED:
                         break;
                     case REJECTED:
-
                         break;
                     case NOT_CONFIRMED:
-                        confirm(challenge);
+                        if (appContext.getUser().getUuid().equals(challenge.getToUserUuid())){
+                            confirm(challenge);
+                        }
                         break;
                 }
                 updateChallengesList();
@@ -94,10 +99,20 @@ public class ChallengeListPresenter {
     private void updateChallengesList() {
         challengeService.challengeFromUser(appContext.getUser())
                 .toList()
-                .subscribe(new Consumer<List<Challenge>>() {
+                .subscribe(new SingleObserver<List<Challenge>>() {
                     @Override
-                    public void accept(List<Challenge> challanges) throws Exception {
-                        view.setChallenges4They(challanges);
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<Challenge> challenges) {
+                        view.setChallenges4They(challenges);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
                     }
                 });
 
@@ -112,10 +127,20 @@ public class ChallengeListPresenter {
                     }
                 })
                 .toList()
-                .subscribe(new Consumer<List<Challenge>>() {
+                .subscribe(new SingleObserver<List<Challenge>>() {
                     @Override
-                    public void accept(List<Challenge> challanges) throws Exception {
-                        view.setChallenges4Me(challanges);
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(List<Challenge> challenges) {
+                        view.setChallenges4Me(challenges);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
                     }
                 });
     }
@@ -135,28 +160,30 @@ public class ChallengeListPresenter {
         appContext.setOnUserClickedListener(new OnUserClickedListener() {
             @Override
             public void onUserSelect(final User user) {
+
                 challengeService.getNotAcceptedChallenge(appContext.getUser(), user)
-                        .subscribe(new Observer<Challenge>() {
+                        .count()
+                        .subscribe(new SingleObserver<Long>() {
                             @Override
                             public void onSubscribe(Disposable d) {
 
                             }
 
                             @Override
-                            public void onNext(Challenge challenge) {
-                                view.showToast("Jest już wyzwanie dla tego uzytkownika.");
+                            public void onSuccess(Long aLong) {
+
+
+                                if (aLong == null || aLong == 0){
+                                    view.showToast("Utworzenie wyzwania - null");
+                                    challengeService.createChallenge(appContext.getUser(), user);
+                                    updateChallengesList();
+                                }else {
+                                    view.showToast("Jest już wyzwanie dla tego uzytkownika.");
+                                }
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                view.showToast("Utworzenie wyzwania");
-                                challengeService.createChallenge(appContext.getUser(), user);
-                                updateChallengesList();
-
-                            }
-
-                            @Override
-                            public void onComplete() {
 
                             }
                         });
@@ -176,5 +203,9 @@ public class ChallengeListPresenter {
 
     public void onRejectClicked(Challenge challenge) {
         rejectChallenge(challenge);
+    }
+
+    public void onPause() {
+
     }
 }

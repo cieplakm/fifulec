@@ -6,6 +6,9 @@ import javax.inject.Inject;
 
 import hu.akarnokd.rxjava2.math.MathObservable;
 import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.SingleObserver;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
@@ -49,10 +52,20 @@ public class UserPresenter {
 
         challengeObservable
                 .toList()
-        .subscribe(new Consumer<List<Challenge>>() {
+        .subscribe(new SingleObserver<List<Challenge>>() {
             @Override
-            public void accept(List<Challenge> challenges) throws Exception {
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onSuccess(List<Challenge> challenges) {
                 view.setAmountChallenges(challenges.size());
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
             }
         });
 
@@ -80,19 +93,44 @@ public class UserPresenter {
             }
         })
                 .count()
-        .subscribe(new Consumer<Long>() {
+        .subscribe(new SingleObserver<Long>() {
             @Override
-            public void accept(Long aLong) throws Exception {
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onSuccess(Long aLong) {
                 view.setWinsAmount(Long.toString(aLong));
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
             }
         });
 
         MathObservable
                 .sumInt(streamOfGools)
-                .subscribe(new Consumer<Integer>() {
+                .subscribe(new Observer<Integer>() {
                     @Override
-                    public void accept(Integer integer) throws Exception {
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer integer) {
                         view.setGoolsAmount(Integer.toString(integer));
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 });
 

@@ -35,9 +35,6 @@ public class ResolveChallengePresenter {
 
         Challenge challenge = appContext.getChallenge();
 
-
-
-
         challengeService.resolveChallenge(challenge, scoreFrom, scoreTo);
 
         view.finish();

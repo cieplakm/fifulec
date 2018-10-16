@@ -121,6 +121,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
     @Override
     public void setOnChallenge4MeClickListener(OnChallengeClickedListener onChallengeClickedListener) {
         challenges4MeFragment.setOnChallengeClickListener(onChallengeClickedListener);
+        challenges4TheyFragment.setOnChallengeClickListener(onChallengeClickedListener);
     }
 
     @Override
@@ -156,4 +157,9 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        presenter.onPause();
+    }
 }

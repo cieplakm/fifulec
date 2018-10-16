@@ -8,9 +8,53 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:628956538968:android:595eea68217376c9",
+        "mobilesdk_app_id": "1:628956538968:android:97932d89d372c46b",
         "android_client_info": {
           "package_name": "com.mmc.fifulec"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "628956538968-dd5e4r7p388bv8pq3mg5tuc85t17gjv9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mmc.fifulec",
+            "certificate_hash": "ed4dc09a25dcc4a3fe97520a2dd2d9cf0b4d6857"
+          }
+        },
+        {
+          "client_id": "628956538968-3aso6tgip2i19rplpq1tucm32fscggsh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBoR4M948KRB_u7zP738lSu7TUBmpsY964"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "628956538968-3aso6tgip2i19rplpq1tucm32fscggsh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:628956538968:android:595eea68217376c9",
+        "android_client_info": {
+          "package_name": "mmc.com.fifulec"
         }
       },
       "oauth_client": [
@@ -18,7 +62,7 @@
           "client_id": "628956538968-gteegmof6b0rf9h1nisl4kcpc5sv7kgo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.mmc.fifulec",
+            "package_name": "mmc.com.fifulec",
             "certificate_hash": "7d771d676ff132f1df7f53c4da28a5f08863306b"
           }
         },

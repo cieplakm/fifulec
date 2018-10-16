@@ -108,6 +108,9 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
         return new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.hasChildren()){
+                    emitter.onError(new Exception());
+                }
                 for (DataSnapshot ds : dataSnapshot.getChildren()) {
                     Challenge challenge = ds.getValue(Challenge.class);
                     emitter.onNext(challenge);
