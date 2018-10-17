@@ -23,6 +23,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.observables.GroupedObservable;
@@ -42,6 +43,13 @@ public class UserPresenter {
 
     public void onCreate(final UserContract.View view) {
         this.view = view;
+    }
+
+    public void onChallengesClickedClicked() {
+        view.openChallengesList();
+    }
+
+    public void onResume() {
         view.setUserNickTitle(appContext.getUser().getNick());
 
         final User user = appContext.getUser();
@@ -74,21 +82,67 @@ public class UserPresenter {
                     }
                 });
 
-        Observable<Integer> streamOfGools = challengeObservable
-                .map(new Function<Challenge, Integer>() {
+        Observable<Pair<Integer, Integer>> pairObservable = challengeObservable
+                .map(new Function<Challenge, Pair<Integer, Integer>>() {
                     @Override
-                    public Integer apply(Challenge challenge) throws Exception {
-                        Score score;
+                    public Pair<Integer, Integer> apply(Challenge challenge) throws Exception {
+                        Score gainScore;
+                        Score loseScore;
                         Scores scores = challenge.getScores();
                         if (scores.getFrom().getUuid().equals(user.getUuid())) {
-                            score = scores.getFrom();
+                            gainScore = scores.getFrom();
+                            loseScore = scores.getTo();
                         } else {
-                            score = scores.getTo();
+                            gainScore = scores.getTo();
+                            loseScore = scores.getFrom();
                         }
-                        return score.getValue();
+                        return new Pair<>(gainScore.getValue(), loseScore.getValue());
                     }
                 });
 
+        Observable<Integer> gainGools = pairObservable.map(new Function<Pair<Integer, Integer>, Integer>() {
+            @Override
+            public Integer apply(Pair<Integer, Integer> integerIntegerPair) throws Exception {
+                return integerIntegerPair.first;
+            }
+        });
+        Observable<Integer> loseGools = pairObservable.map(new Function<Pair<Integer, Integer>, Integer>() {
+            @Override
+            public Integer apply(Pair<Integer, Integer> integerIntegerPair) throws Exception {
+                return integerIntegerPair.second;
+            }
+        });
+        Observable<Integer> sumGain = MathObservable
+                .sumInt(gainGools);
+        Observable<Integer> loseSum = MathObservable
+                .sumInt(loseGools);
+
+        sumGain.zipWith(loseSum, new BiFunction<Integer, Integer, String>() {
+            @Override
+            public String apply(Integer integer, Integer integer2) throws Exception {
+                return "+" + integer + "/-" + integer2;
+            }
+        }).subscribe(new Observer<String>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+
+            }
+
+            @Override
+            public void onNext(String s) {
+                view.setGoolsBilance(s);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        });
 
         Observable<GroupedObservable<ChallengeScoreType, Challenge>> groupedObservableObservable = challengeObservable
                 .groupBy(new Function<Challenge, ChallengeScoreType>() {
@@ -106,17 +160,17 @@ public class UserPresenter {
 
 
         groupedObservableObservable.flatMap(new Function<GroupedObservable<ChallengeScoreType, Challenge>, ObservableSource<Pair<ChallengeScoreType, Integer>>>() {
-                    @Override
-                    public ObservableSource<Pair<ChallengeScoreType, Integer>> apply(final GroupedObservable<ChallengeScoreType, Challenge> challengeScoreTypeChallengeGroupedObservable) throws Exception {
-                        return challengeScoreTypeChallengeGroupedObservable.count().toObservable()
-                                .map(new Function<Long, Pair<ChallengeScoreType, Integer>>() {
-                                    @Override
-                                    public Pair<ChallengeScoreType, Integer> apply(Long aLong) throws Exception {
-                                        return new Pair<>(challengeScoreTypeChallengeGroupedObservable.getKey(), aLong.intValue());
-                                    }
-                                });
-                    }
-                })
+            @Override
+            public ObservableSource<Pair<ChallengeScoreType, Integer>> apply(final GroupedObservable<ChallengeScoreType, Challenge> challengeScoreTypeChallengeGroupedObservable) throws Exception {
+                return challengeScoreTypeChallengeGroupedObservable.count().toObservable()
+                        .map(new Function<Long, Pair<ChallengeScoreType, Integer>>() {
+                            @Override
+                            public Pair<ChallengeScoreType, Integer> apply(Long aLong) throws Exception {
+                                return new Pair<>(challengeScoreTypeChallengeGroupedObservable.getKey(), aLong.intValue());
+                            }
+                        });
+            }
+        })
                 .subscribe(new Observer<Pair<ChallengeScoreType, Integer>>() {
                     @Override
                     public void onSubscribe(Disposable d) {
@@ -144,36 +198,5 @@ public class UserPresenter {
 
                     }
                 });
-
-
-        MathObservable
-                .sumInt(streamOfGools)
-                .subscribe(new Observer<Integer>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Integer integer) {
-                        view.setGoolsAmount(Integer.toString(integer));
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-
-
-    }
-
-    public void onChallengesClickedClicked() {
-        view.openChallengesList();
     }
 }

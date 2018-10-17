@@ -45,7 +45,6 @@ public class ResolveChallengeActivity extends AppCompatActivity implements Resol
 
     @OnClick(R.id.btn_confirm)
     public void onConfirmClicked(){
-        showToast(etScore4FromUser.getText().toString() + " : " + etScore4ToUser.getText().toString());
         presenter.onConfirmClicked(etScore4FromUser.getText().toString(), etScore4ToUser.getText().toString());
     }
 
@@ -58,5 +57,11 @@ public class ResolveChallengeActivity extends AppCompatActivity implements Resol
     @Override
     public void showToast(String s) {
         Toast.makeText(this, s, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void setScores(String from, String to) {
+        etScore4FromUser.setText(from);
+        etScore4ToUser.setText(to);
     }
 }

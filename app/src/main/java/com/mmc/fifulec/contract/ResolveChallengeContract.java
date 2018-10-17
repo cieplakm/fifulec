@@ -8,6 +8,8 @@ public interface ResolveChallengeContract {
         void setTitles(String fromNick, String toNick);
 
         void showToast(String s);
+
+        void setScores(String from, String to);
     }
 
 }

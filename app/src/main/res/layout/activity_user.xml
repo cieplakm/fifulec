@@ -24,13 +24,14 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="180dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/ic_stars_black_24dp" />
+        android:background="@android:color/transparent"
+        app:srcCompat="@drawable/ic_whatshot_black_24dp" />
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -39,11 +40,12 @@
             android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
             app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="50dp">
+
         <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Liczba zakonczonych meczy"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Liczba meczów" />
 
         <TextView
             android:id="@+id/tv_chalanges_amount"
@@ -64,10 +66,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Liczba strzelonych goli"/>
+                android:text="Bilans bramek"/>
 
         <TextView
-            android:id="@+id/tv_gools_amount"
+            android:id="@+id/tv_gools_balance"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"

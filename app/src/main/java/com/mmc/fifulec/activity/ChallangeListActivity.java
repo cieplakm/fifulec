@@ -2,6 +2,7 @@ package com.mmc.fifulec.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,13 +29,10 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
 
     @BindView(R.id.fl_challenges_4_me)
     FrameLayout flChallenges4Me;
-    @BindView(R.id.fl_challenges_4_they)
-    FrameLayout flChallenges4They;
 
     @Inject
     ChallengeListPresenter presenter;
     private ChallengeListFragment challenges4MeFragment;
-    private ChallengeListFragment challenges4TheyFragment;
 
 
     @Override
@@ -46,7 +44,6 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
         Fifulec.component().inject(this);
 
         challenges4MeFragment = new ChallengeListFragment();
-        challenges4TheyFragment = new ChallengeListFragment();
 
         presenter.onCreate(this);
     }
@@ -77,12 +74,6 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
     @Override
     public void setChallenges4They(List<Challenge> challenges) {
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fl_challenges_4_they, challenges4TheyFragment)
-                .commit();
-
-        challenges4TheyFragment.setChallenges4Adapter(challenges);
     }
 
     @Override
@@ -121,7 +112,6 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
     @Override
     public void setOnChallenge4MeClickListener(OnChallengeClickedListener onChallengeClickedListener) {
         challenges4MeFragment.setOnChallengeClickListener(onChallengeClickedListener);
-        challenges4TheyFragment.setOnChallengeClickListener(onChallengeClickedListener);
     }
 
     @Override

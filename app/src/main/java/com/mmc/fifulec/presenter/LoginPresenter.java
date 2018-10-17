@@ -66,7 +66,6 @@ public class LoginPresenter {
 
             @Override
             public void onNext(User user) {
-                view.showToast("Witaj " + user.getNick());
                 appContext.setUser(user);
                 preferences.putNick(user.getNick());
                 preferences.putPassword(user.getPassword());

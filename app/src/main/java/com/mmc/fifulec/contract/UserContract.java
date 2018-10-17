@@ -9,7 +9,7 @@ public interface UserContract {
 
         void setAmountChallenges(int size);
 
-        void setGoolsAmount(String goolsAmount);
+        void setGoolsBilance(String goolsAmount);
 
         void setWinsAmount(String wins);
 

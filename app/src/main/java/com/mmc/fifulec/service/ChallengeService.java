@@ -186,7 +186,6 @@ public class ChallengeService {
                                 || challenge.getToUserUuid().equals(from.getUuid()) && challenge.getFromUserUuid().equals(to.getUuid());
                     }
                 })
-                .timeout(6, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }

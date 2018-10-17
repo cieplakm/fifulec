@@ -18,22 +18,26 @@
             app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
 
         <EditText
-                android:id="@+id/et_score_from_user"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="number"
-                android:maxLength="2"/>
+            android:id="@+id/et_score_from_user"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="2"
+            android:textSize="30sp" />
 
         <EditText
-                android:id="@+id/et_score_to_user"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="number"
-                android:maxLength="2"/>
+            android:id="@+id/et_score_to_user"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:ems="10"
+            android:gravity="center"
+            android:inputType="number"
+            android:maxLength="2"
+            android:textSize="30sp" />
 
     </LinearLayout>
 
@@ -50,31 +54,32 @@
             app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-                android:id="@+id/tv_from_user_nick"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:text="Ja"
-                android:textSize="48dp"/>
+            android:id="@+id/tv_from_user_nick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="Ja"
+            android:textSize="30sp" />
 
         <TextView
-                android:id="@+id/tv_to_user_nick"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:text="On"
-                android:textSize="48dp"/>
+            android:id="@+id/tv_to_user_nick"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="On"
+            android:textSize="30sp" />
     </LinearLayout>
 
     <Button
-            android:id="@+id/btn_confirm"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Potwierdź"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"/>
+        android:id="@+id/btn_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/circle_gray"
+        android:text="Potwierdź"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout3" />
 </android.support.constraint.ConstraintLayout>

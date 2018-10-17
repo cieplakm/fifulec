@@ -5,6 +5,7 @@ import javax.inject.Inject;
 import com.mmc.fifulec.contract.ResolveChallengeContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.Challenge;
+import com.mmc.fifulec.model.Scores;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
 
@@ -26,7 +27,14 @@ public class ResolveChallengePresenter {
     public void onCreate(ResolveChallengeContract.View view){
         this.view = view;
         Challenge challenge = appContext.getChallenge();
+
         view.setTitles(challenge.getFromUserNick(), challenge.getToUserNick());
+
+        Scores scores = challenge.getScores();
+
+        if (scores!= null){
+            view.setScores(Integer.toString(scores.getFrom().getValue()), Integer.toString(scores.getTo().getValue()));
+        }
     }
 
     public void onConfirmClicked(String from, String to) {

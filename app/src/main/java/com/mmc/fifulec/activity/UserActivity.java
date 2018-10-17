@@ -1,7 +1,6 @@
 package com.mmc.fifulec.activity;
 
 import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -12,7 +11,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.mmc.fifulec.Fifulec;
-import com.mmc.fifulec.NotifiService;
 import com.mmc.fifulec.R;
 import com.mmc.fifulec.RestartNotiServiceBroadcast;
 import com.mmc.fifulec.contract.UserContract;
@@ -24,8 +22,8 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     TextView tvUserNick;
     @BindView(R.id.tv_chalanges_amount)
     TextView tvUChallengesAmount;
-    @BindView(R.id.tv_gools_amount)
-    TextView tvGoolsAmount;
+    @BindView(R.id.tv_gools_balance)
+    TextView tvGoolsBalance;
     @BindView(R.id.tv_wins_amount)
     TextView tvWinsAmount;
     @BindView(R.id.tv_draws_amount)
@@ -43,9 +41,13 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
 
         ButterKnife.bind(this);
         Fifulec.component().inject(this);
-        Intent intent = new Intent(this, RestartNotiServiceBroadcast.class);
-        sendBroadcast(intent);
         presenter.onCreate(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.onResume();
     }
 
     @OnClick(R.id.btn_challanges)
@@ -70,8 +72,8 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     }
 
     @Override
-    public void setGoolsAmount(String goolsAmount){
-        tvGoolsAmount.setText(goolsAmount);
+    public void setGoolsBilance(String goolsAmount){
+        tvGoolsBalance.setText(goolsAmount);
     }
 
     @Override
