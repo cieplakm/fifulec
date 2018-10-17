@@ -1,6 +1,7 @@
 package com.mmc.fifulec.activity;
 
 import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -13,6 +14,7 @@ import butterknife.OnClick;
 import com.mmc.fifulec.Fifulec;
 import com.mmc.fifulec.NotifiService;
 import com.mmc.fifulec.R;
+import com.mmc.fifulec.RestartNotiServiceBroadcast;
 import com.mmc.fifulec.contract.UserContract;
 import com.mmc.fifulec.presenter.UserPresenter;
 
@@ -41,6 +43,8 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
 
         ButterKnife.bind(this);
         Fifulec.component().inject(this);
+        Intent intent = new Intent(this, RestartNotiServiceBroadcast.class);
+        sendBroadcast(intent);
         presenter.onCreate(this);
     }
 

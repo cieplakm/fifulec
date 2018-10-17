@@ -101,6 +101,18 @@ public class ChallengeListPresenter {
 
     private void updateChallengesList() {
         challengeService.challengeFromUser(appContext.getUser())
+                .sorted(new Comparator<Challenge>() {
+                    @Override
+                    public int compare(Challenge o1, Challenge o2) {
+                        int x = ChallengeHelper.getChallengeStatusWeight(o1);
+                        int y = ChallengeHelper.getChallengeStatusWeight(o2);
+                        if (x!=y){
+                            return Integer.compare(x, y);
+                        }else {
+                            return Long.compare(o1.getTimestamp(), o2.getTimestamp());
+                        }
+                    }
+                })
                 .filter(new Predicate<Challenge>() {
                     @Override
                     public boolean test(Challenge challenge) throws Exception {
@@ -133,7 +145,11 @@ public class ChallengeListPresenter {
                     public int compare(Challenge o1, Challenge o2) {
                         int x = ChallengeHelper.getChallengeStatusWeight(o1);
                         int y = ChallengeHelper.getChallengeStatusWeight(o2);
-                        return Integer.compare(x, y);
+                        if (x!=y){
+                            return Integer.compare(x, y);
+                        }else {
+                            return Long.compare(o1.getTimestamp(), o2.getTimestamp());
+                        }
                     }
                 })
                 .filter(new Predicate<Challenge>() {
@@ -141,7 +157,7 @@ public class ChallengeListPresenter {
                     public boolean test(Challenge challenge) throws Exception {
                         ChallengeStatus challengeStatus = challenge.getChallengeStatus();
                         return challengeStatus != ChallengeStatus.FINISHED ||
-                                challengeStatus!=ChallengeStatus.REJECTED;
+                                challengeStatus!= ChallengeStatus.REJECTED;
                     }
                 })
                 .toList()

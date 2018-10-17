@@ -90,7 +90,7 @@ public class UserPresenter {
                 });
 
 
-        challengeObservable
+        Observable<GroupedObservable<ChallengeScoreType, Challenge>> groupedObservableObservable = challengeObservable
                 .groupBy(new Function<Challenge, ChallengeScoreType>() {
                     @Override
                     public ChallengeScoreType apply(Challenge challenge) throws Exception {
@@ -102,8 +102,10 @@ public class UserPresenter {
                             return ChallengeScoreType.LOSE;
                         }
                     }
-                })
-                .flatMap(new Function<GroupedObservable<ChallengeScoreType, Challenge>, ObservableSource<Pair<ChallengeScoreType, Integer>>>() {
+                });
+
+
+        groupedObservableObservable.flatMap(new Function<GroupedObservable<ChallengeScoreType, Challenge>, ObservableSource<Pair<ChallengeScoreType, Integer>>>() {
                     @Override
                     public ObservableSource<Pair<ChallengeScoreType, Integer>> apply(final GroupedObservable<ChallengeScoreType, Challenge> challengeScoreTypeChallengeGroupedObservable) throws Exception {
                         return challengeScoreTypeChallengeGroupedObservable.count().toObservable()

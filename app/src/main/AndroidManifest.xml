@@ -23,7 +23,7 @@
         <activity android:name=".activity.UserActivity" />
         <activity android:name=".activity.UserListActivity" />
         <activity android:name=".activity.ChallangeListActivity" />
-        <activity android:name=".activity.ResolveChallengeActivity"></activity>
+        <activity android:name=".activity.ResolveChallengeActivity"/>
         <receiver android:name=".BootReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>

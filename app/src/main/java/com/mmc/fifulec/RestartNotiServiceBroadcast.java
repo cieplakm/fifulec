@@ -11,6 +11,7 @@ public class RestartNotiServiceBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Toast.makeText(context, "Restart!", Toast.LENGTH_SHORT).show();
+
         Intent i = new Intent(context, NotifiService.class);
         context.startService(i);
 
@@ -18,7 +19,7 @@ public class RestartNotiServiceBroadcast extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, ii, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +1000L, pendingIntent);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 30*1000L, pendingIntent);
 
     }
 }

@@ -41,6 +41,7 @@ public class ChallengeService {
                 .toUserUuid(toUser.getUuid())
                 .isAccepted(false)
                 .challengeStatus(ChallengeStatus.NOT_ACCEPTED)
+                .timestamp(System.currentTimeMillis())
                 .build();
         challengeRepository.createChallenge(challenge);
     }
@@ -169,13 +170,20 @@ public class ChallengeService {
     }
 
 
-    public Observable<Challenge> getNotAcceptedChallenge(User from, final User to) {
+    public Observable<Challenge> getNotAcceptedChallenge(final User from, final User to) {
         return challengeRepository.getChallengesFromUser(from.getUuid())
+                .mergeWith(challengeRepository.getChallengesToUser(to.getUuid()))
                 .filter(new Predicate<Challenge>() {
                     @Override
                     public boolean test(Challenge challenge) throws Exception {
-                        return challenge.getChallengeStatus() == ChallengeStatus.NOT_ACCEPTED
-                                && challenge.getToUserUuid().equals(to.getUuid());
+                        return challenge.getChallengeStatus() == ChallengeStatus.NOT_ACCEPTED;
+                    }
+                })
+                .filter(new Predicate<Challenge>() {
+                    @Override
+                    public boolean test(Challenge challenge) throws Exception {
+                        return challenge.getToUserUuid().equals(to.getUuid()) && challenge.getFromUserUuid().equals(from.getUuid())
+                                || challenge.getToUserUuid().equals(from.getUuid()) && challenge.getFromUserUuid().equals(to.getUuid());
                     }
                 })
                 .timeout(6, TimeUnit.SECONDS)
