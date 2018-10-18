@@ -9,9 +9,7 @@ public interface ChallengeRepository {
 
     void updateChallenge(Challenge challenge);
 
-    Observable<Challenge> getChallengesFromUser(String uuid);
-
-    Observable<Challenge> getChallengesToUser(String uuid);
+    Observable<Challenge> getChallenge(String challengeUuid);
 
     Observable<Challenge> listeningForChallengeLive(String uuid);
 }

@@ -66,11 +66,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
 
     @Override
     public void setChallenges4Me(List<Challenge> challenges) {
-
-
-
         challenges4MeFragment.setChallenges4Adapter(challenges);
-
     }
 
     @Override

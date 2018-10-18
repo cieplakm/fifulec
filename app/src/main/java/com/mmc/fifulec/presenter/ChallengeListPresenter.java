@@ -80,7 +80,7 @@ public class ChallengeListPresenter {
         view.showConfirmDialog(new OnChallengeConfirm() {
             @Override
             public void confirm() {
-                challengeService.confirmChallange(challenge);
+                challengeService.confirmChallenge(challenge);
                 updateChallengesList();
             }
 
@@ -101,48 +101,7 @@ public class ChallengeListPresenter {
     }
 
     private void updateChallengesList() {
-//        challengeService.challengeFromUser(appContext.getUser())
-//
-//                .sorted(new Comparator<Challenge>() {
-//                    @Override
-//                    public int compare(Challenge o1, Challenge o2) {
-//                        int x = ChallengeHelper.getChallengeStatusWeight(o1);
-//                        int y = ChallengeHelper.getChallengeStatusWeight(o2);
-//                        if (x!=y){
-//                            return Integer.compare(x, y);
-//                        }else {
-//                            return Long.compare(o1.getTimestamp(), o2.getTimestamp());
-//                        }
-//                    }
-//                })
-//                .filter(new Predicate<Challenge>() {
-//                    @Override
-//                    public boolean test(Challenge challenge) throws Exception {
-//                        ChallengeStatus challengeStatus = challenge.getChallengeStatus();
-//                        return challengeStatus != ChallengeStatus.FINISHED &&
-//                        challengeStatus != ChallengeStatus.REJECTED;
-//                    }
-//                })
-//                .toList()
-//                .subscribe(new SingleObserver<List<Challenge>>() {
-//                    @Override
-//                    public void onSubscribe(Disposable d) {
-//
-//                    }
-//
-//                    @Override
-//                    public void onSuccess(List<Challenge> challenges) {
-//                        view.setChallenges4They(challenges);
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//
-//                    }
-//                });
-
-        challengeService.challengeToUser(appContext.getUser())
-                .mergeWith(challengeService.challengeFromUser(appContext.getUser()))
+        challengeService.challengesPerUser(appContext.getUser())
                 .sorted(new Comparator<Challenge>() {
                     @Override
                     public int compare(Challenge o1, Challenge o2) {
@@ -186,29 +145,26 @@ public class ChallengeListPresenter {
         appContext.setOnUserClickedListener(new OnUserClickedListener() {
             @Override
             public void onUserSelect(final User user) {
-
                 challengeService.getNotAcceptedChallenge(appContext.getUser(), user)
                         .count()
                         .subscribe(new SingleObserver<Long>() {
                             @Override
                             public void onSubscribe(Disposable d) {
-
                             }
 
                             @Override
                             public void onSuccess(Long aLong) {
                                 if (aLong == null || aLong == 0) {
-                                    view.showToast("Wyzwanie wysłane");
+                                    view.showToast("Wyzwanie wysłane do " + user.getNick());
                                     challengeService.createChallenge(appContext.getUser(), user);
                                     updateChallengesList();
                                 } else {
-                                    view.showToast("Jest już wyzwanie dla tego uzytkownika.");
+                                    view.showToast("Istnieje nie zaakceptowane wyzwanie z " + user.getNick());
                                 }
                             }
 
                             @Override
                             public void onError(Throwable e) {
-
                             }
                         });
             }

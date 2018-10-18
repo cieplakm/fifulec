@@ -1,7 +1,6 @@
 package com.mmc.fifulec.service;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -13,6 +12,7 @@ import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.Challenge;
+import com.mmc.fifulec.model.ChallengeMapping;
 import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.model.Score;
 import com.mmc.fifulec.model.Scores;
@@ -25,36 +25,39 @@ public class ChallengeService {
 
     private final ChallengeRepository challengeRepository;
     private final UserRepository userRepository;
+    private ChallengeMappingService challengeMappingService;
 
     @Inject
-    public ChallengeService(ChallengeRepository challengeRepository, UserRepository userRepository) {
+    public ChallengeService(ChallengeRepository challengeRepository,
+                            UserRepository userRepository,
+                            ChallengeMappingService challengeMappingService) {
         this.challengeRepository = challengeRepository;
         this.userRepository = userRepository;
+        this.challengeMappingService = challengeMappingService;
     }
 
 
-    public void createChallenge(User user, User toUser) {
+    public String createChallenge(User user, User toUser) {
         UUID uuid = UUID.randomUUID();
-        Challenge challenge = new Challenge().builder()
+        Challenge challenge = Challenge.builder()
                 .uuid(uuid.toString())
                 .fromUserUuid(user.getUuid())
+                .fromUserNick(user.getNick())
+                .toUserNick(toUser.getNick())
                 .toUserUuid(toUser.getUuid())
                 .isAccepted(false)
                 .challengeStatus(ChallengeStatus.NOT_ACCEPTED)
                 .timestamp(System.currentTimeMillis())
                 .build();
         challengeRepository.createChallenge(challenge);
+        challengeMappingService.create(challenge);
+
+        return uuid.toString();
     }
 
     public void acceptChallenge(Challenge challenge) {
         challenge.setAccepted(true);
         challenge.setChallengeStatus(ChallengeStatus.ACCEPTED);
-        challengeRepository.updateChallenge(challenge);
-    }
-
-    public void finishChallenge(Challenge challenge) {
-        challenge.setAccepted(true);
-        challenge.setChallengeStatus(ChallengeStatus.FINISHED);
         challengeRepository.updateChallenge(challenge);
     }
 
@@ -74,116 +77,36 @@ public class ChallengeService {
         challengeRepository.updateChallenge(challenge);
     }
 
-    public void confirmChallange(Challenge challenge) {
+    public void confirmChallenge(Challenge challenge) {
         challenge.setChallengeStatus(ChallengeStatus.FINISHED);
         challengeRepository.updateChallenge(challenge);
     }
 
-    public Observable<Challenge> challengeFromUser(User user) {
-        return challengeRepository.getChallengesFromUser(user.getUuid())
-                .flatMap(new Function<Challenge, ObservableSource<Challenge>>() {
+    public Observable<Challenge> challengesPerUser(User user) {
+        return challengeMappingService.mapping4User(user.getUuid())
+                .flatMap(new Function<ChallengeMapping, ObservableSource<Challenge>>() {
                     @Override
-                    public ObservableSource<Challenge> apply(final Challenge challenge) throws Exception {
-                        return userRepository.userByUuidObservable(challenge.getFromUserUuid())
-                                .filter(new Predicate<User>() {
-                                    @Override
-                                    public boolean test(User user) throws Exception {
-                                        return user.getUuid().equals(challenge.getFromUserUuid());
-                                    }
-                                })
-                                .map(new Function<User, Challenge>() {
-                                    @Override
-                                    public Challenge apply(User user1) throws Exception {
-                                        challenge.setFromUserNick(user1.getNick());
-                                        return challenge;
-                                    }
-                                });
-                    }
-                })
-                .flatMap(new Function<Challenge, ObservableSource<Challenge>>() {
-                    @Override
-                    public ObservableSource<Challenge> apply(final Challenge challange1) throws Exception {
-                        return userRepository.userByUuidObservable(challange1.getToUserUuid())
-                                .filter(new Predicate<User>() {
-                                    @Override
-                                    public boolean test(User user) throws Exception {
-                                        return user.getUuid().equals(challange1.getToUserUuid());
-                                    }
-                                })
-                                .map(new Function<User, Challenge>() {
-                                    @Override
-                                    public Challenge apply(User user1) throws Exception {
-                                        challange1.setToUserNick(user1.getNick());
-                                        return challange1;
-                                    }
-                                });
+                    public ObservableSource<Challenge> apply(ChallengeMapping challengeMapping) throws Exception {
+                        return challengeRepository.getChallenge(challengeMapping.getChallengeUuid());
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
-
     }
-
-    public Observable<Challenge> challengeToUser(User user) {
-        return challengeRepository.getChallengesToUser(user.getUuid())
-                .flatMap(new Function<Challenge, ObservableSource<Challenge>>() {
-                    @Override
-                    public ObservableSource<Challenge> apply(final Challenge challenge) throws Exception {
-                        return userRepository.userByUuidObservable(challenge.getFromUserUuid())
-                                .filter(new Predicate<User>() {
-                                    @Override
-                                    public boolean test(User user) throws Exception {
-                                        return user.getUuid().equals(challenge.getFromUserUuid());
-                                    }
-                                })
-                                .map(new Function<User, Challenge>() {
-                                    @Override
-                                    public Challenge apply(User user1) throws Exception {
-                                        challenge.setFromUserNick(user1.getNick());
-                                        return challenge;
-                                    }
-                                });
-                    }
-                })
-                .flatMap(new Function<Challenge, ObservableSource<Challenge>>() {
-                    @Override
-                    public ObservableSource<Challenge> apply(final Challenge challange1) throws Exception {
-                        return userRepository.userByUuidObservable(challange1.getToUserUuid())
-                                .filter(new Predicate<User>() {
-                                    @Override
-                                    public boolean test(User user) throws Exception {
-                                        return user.getUuid().equals(challange1.getToUserUuid());
-                                    }
-                                })
-                                .map(new Function<User, Challenge>() {
-                                    @Override
-                                    public Challenge apply(User user1) throws Exception {
-                                        challange1.setToUserNick(user1.getNick());
-                                        return challange1;
-                                    }
-                                });
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io());
-
-    }
-
 
     public Observable<Challenge> getNotAcceptedChallenge(final User from, final User to) {
-        return challengeRepository.getChallengesFromUser(from.getUuid())
-                .mergeWith(challengeRepository.getChallengesToUser(to.getUuid()))
+        return challengesPerUser(from)
+                .filter(new Predicate<Challenge>() {
+                    @Override
+                    public boolean test(Challenge challenge) throws Exception {
+                        return to.getUuid().equals(challenge.getFromUserUuid()) ||
+                                to.getUuid().equals(challenge.getToUserUuid());
+                    }
+                })
                 .filter(new Predicate<Challenge>() {
                     @Override
                     public boolean test(Challenge challenge) throws Exception {
                         return challenge.getChallengeStatus() == ChallengeStatus.NOT_ACCEPTED;
-                    }
-                })
-                .filter(new Predicate<Challenge>() {
-                    @Override
-                    public boolean test(Challenge challenge) throws Exception {
-                        return challenge.getToUserUuid().equals(to.getUuid()) && challenge.getFromUserUuid().equals(from.getUuid())
-                                || challenge.getToUserUuid().equals(from.getUuid()) && challenge.getFromUserUuid().equals(to.getUuid());
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

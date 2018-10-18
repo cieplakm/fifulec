@@ -14,10 +14,8 @@ import lombok.NoArgsConstructor;
 public class Challenge {
     private String uuid;
     private String fromUserUuid;
-    @Exclude
     private String fromUserNick;
     private String toUserUuid;
-    @Exclude
     private String toUserNick;
     private boolean isAccepted;
     private ChallengeStatus challengeStatus;

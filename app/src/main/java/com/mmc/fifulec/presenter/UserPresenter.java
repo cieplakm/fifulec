@@ -54,8 +54,7 @@ public class UserPresenter {
 
         final User user = appContext.getUser();
 
-        final Observable<Challenge> challengeObservable = challengeService.challengeFromUser(user)
-                .mergeWith(challengeService.challengeToUser(user))
+        final Observable<Challenge> challengeObservable = challengeService.challengesPerUser(user)
                 .filter(new Predicate<Challenge>() {
                     @Override
                     public boolean test(Challenge challenge) throws Exception {

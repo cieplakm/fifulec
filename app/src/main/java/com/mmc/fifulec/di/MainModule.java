@@ -8,8 +8,11 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import dagger.Module;
 import dagger.Provides;
+
+import com.mmc.fifulec.repository.ChallengeMappingRepository;
 import com.mmc.fifulec.repository.ChallengeRepository;
 import com.mmc.fifulec.repository.FirebaseChallengeRepository;
+import com.mmc.fifulec.repository.FirebaseMappingRepository;
 import com.mmc.fifulec.repository.FirebaseSecurityRepository;
 import com.mmc.fifulec.repository.FirebaseUserRepository;
 import com.mmc.fifulec.repository.SecurityRepository;
@@ -57,6 +60,12 @@ public class MainModule {
     @AppScope
     public ChallengeRepository challangeRepository(FirebaseDatabase firebaseDatabase){
         return new FirebaseChallengeRepository(firebaseDatabase);
+    }
+
+    @Provides
+    @AppScope
+    public ChallengeMappingRepository challengeMappingRepository(FirebaseDatabase firebaseDatabase){
+        return new FirebaseMappingRepository(firebaseDatabase);
     }
 
 }

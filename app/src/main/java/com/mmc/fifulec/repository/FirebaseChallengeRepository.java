@@ -33,7 +33,10 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
 
     @Override
     public void createChallenge(Challenge challenge) {
-        database.getReference().child(CHALLANGES).child(challenge.getUuid()).setValue(challenge);
+        database.getReference()
+                .child(CHALLANGES)
+                .child(challenge.getUuid())
+                .setValue(challenge);
     }
 
     @Override
@@ -43,33 +46,24 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
     }
 
     @Override
-    public Observable<Challenge> getChallengesFromUser(final String uuid) {
-        Observable<Challenge> objectObservable = Observable.create(new ObservableOnSubscribe<Challenge>() {
-            @Override
-            public void subscribe(ObservableEmitter<Challenge> emitter) throws Exception {
-                challengesReference.addListenerForSingleValueEvent(FirebaseChallengeRepository.this.subscribe(emitter));
-            }
-        });
-        return objectObservable.filter(new Predicate<Challenge>() {
-            @Override
-            public boolean test(Challenge challenge) throws Exception {
-                return challenge.getFromUserUuid().equals(uuid);
-            }
-        });
-    }
+    public Observable<Challenge> getChallenge(final String uuid) {
 
-    @Override
-    public Observable<Challenge> getChallengesToUser(final String uuid) {
-        Observable<Challenge> objectObservable = Observable.create(new ObservableOnSubscribe<Challenge>() {
+                return Observable.create(new ObservableOnSubscribe<Challenge>() {
             @Override
-            public void subscribe(ObservableEmitter<Challenge> emitter) throws Exception {
-                challengesReference.addListenerForSingleValueEvent(FirebaseChallengeRepository.this.subscribe(emitter));
-            }
-        });
-        return objectObservable.filter(new Predicate<Challenge>() {
-            @Override
-            public boolean test(Challenge challenge) throws Exception {
-                return challenge.getToUserUuid().equals(uuid);
+            public void subscribe(final ObservableEmitter<Challenge> emitter) throws Exception {
+                challengesReference.child(uuid).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Challenge value = dataSnapshot.getValue(Challenge.class);
+                        emitter.onNext(value);
+                        emitter.onComplete();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        emitter.onError(new Exception());
+                    }
+                });
             }
         });
     }
@@ -102,23 +96,5 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
                         return challenge.getToUserUuid().equals(uuid)  && challenge.getChallengeStatus() == ChallengeStatus.NOT_ACCEPTED;
                     }
                 });
-    }
-
-    private ValueEventListener subscribe(final ObservableEmitter<Challenge> emitter) {
-        return new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds : dataSnapshot.getChildren()) {
-                    Challenge challenge = ds.getValue(Challenge.class);
-                    emitter.onNext(challenge);
-                }
-                emitter.onComplete();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                emitter.onError(new Exception());
-            }
-        };
     }
 }
