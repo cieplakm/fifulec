@@ -45,6 +45,11 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
 
         challenges4MeFragment = new ChallengeListFragment();
 
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fl_challenges_4_me, challenges4MeFragment)
+                .commit();
+
         presenter.onCreate(this);
     }
 
@@ -62,10 +67,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
     @Override
     public void setChallenges4Me(List<Challenge> challenges) {
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fl_challenges_4_me, challenges4MeFragment)
-                .commit();
+
 
         challenges4MeFragment.setChallenges4Adapter(challenges);
 
