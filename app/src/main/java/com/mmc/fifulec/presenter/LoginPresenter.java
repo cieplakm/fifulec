@@ -11,6 +11,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
 
 @AppScope
@@ -54,6 +55,14 @@ public class LoginPresenter {
                         return true;
                     }
                 })
+                .doOnNext(new Consumer<User>() {
+                    @Override
+                    public void accept(User user) throws Exception {
+                        if (!user.getPassword().equals(properPass)){
+                            throw new Exception("Błędne hasło");
+                        }
+                    }
+                })
                 .subscribe(getLoginObserver());
     }
 
@@ -74,7 +83,7 @@ public class LoginPresenter {
 
             @Override
             public void onError(Throwable e) {
-
+                view.showToast(e.getMessage());
             }
 
             @Override

@@ -9,6 +9,8 @@ import com.mmc.fifulec.model.Scores;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
 
+import dagger.internal.Preconditions;
+
 @AppScope
 public class ResolveChallengePresenter {
 
@@ -38,6 +40,15 @@ public class ResolveChallengePresenter {
     }
 
     public void onConfirmClicked(String from, String to) {
+
+        try {
+            if (from == null || from.isEmpty()) throw new Exception("Wynik musi być wpisany");
+            if (to == null || to.isEmpty()) throw new Exception("Wynik musi być wpisany");
+        }catch (Exception e){
+            view.showToast(e.getMessage());
+            return;
+        }
+
         int scoreFrom = Integer.parseInt(from);
         int scoreTo = Integer.parseInt(to);
 
