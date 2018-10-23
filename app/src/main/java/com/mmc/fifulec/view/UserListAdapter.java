@@ -1,7 +1,9 @@
 package com.mmc.fifulec.view;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import butterknife.ButterKnife;
 import com.mmc.fifulec.R;
 import com.mmc.fifulec.activity.Closeable;
 import com.mmc.fifulec.model.OnUserClickedListener;
+import com.mmc.fifulec.model.OpponentSelected;
 import com.mmc.fifulec.model.User;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
@@ -22,6 +25,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     private List<User> users;
     private OnUserClickedListener onUserClickedListener;
     private Closeable closable;
+    private Context context;
 
     public UserListAdapter(OnUserClickedListener onUserClickedListener) {
         this.onUserClickedListener = onUserClickedListener;
@@ -33,7 +37,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        Context context = viewGroup.getContext();
+        context = viewGroup.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.user_item, viewGroup, false);
         return new ViewHolder(view);
     }
@@ -46,10 +50,32 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
         viewHolder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onUserClickedListener != null) {
-                    onUserClickedListener.onUserSelect(user);
-                    closable.close();
-                }
+
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                if (onUserClickedListener != null) {
+                                    onUserClickedListener.onUserSelect(new OpponentSelected(user, true));
+                                }
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                if (onUserClickedListener != null){
+                                    onUserClickedListener.onUserSelect(new OpponentSelected(user, false));
+                                }
+                                break;
+                        }
+                        closable.close();
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder
+                        .setMessage("Czy chcesz rozegrać także rewanż?")
+                        .setPositiveButton("Tak", dialogClickListener)
+                        .setNegativeButton("Nie", dialogClickListener).show();
             }
         });
     }

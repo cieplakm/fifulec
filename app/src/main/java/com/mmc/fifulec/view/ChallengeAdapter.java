@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -64,12 +65,21 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
 
         }
 
+        viewHolder.llRew.setVisibility(challenge.isTwoLeggedTie() ? View.VISIBLE : View.GONE);
+
         if (challenge.getScores() != null && (challenge.getChallengeStatus() == ChallengeStatus.NOT_CONFIRMED || challenge.getChallengeStatus() == ChallengeStatus.FINISHED)){
-            viewHolder.tvFromScore.setText(Integer.toString(challenge.getScores().getFrom().getValue()));
-            viewHolder.tvToScore.setText(Integer.toString(challenge.getScores().getTo().getValue()));
+            viewHolder.tvFromScore.setText(Integer.toString(challenge.getScores().get(0).getFrom().getValue()));
+            viewHolder.tvToScore.setText(Integer.toString(challenge.getScores().get(0).getTo().getValue()));
+
+            if (challenge.isTwoLeggedTie()){
+                viewHolder.tvFromScoreRew.setText(Integer.toString(challenge.getScores().get(1).getFrom().getValue()));
+                viewHolder.tvToScoreRew.setText(Integer.toString(challenge.getScores().get(1).getTo().getValue()));
+            }
         }else {
             viewHolder.tvFromScore.setText("-");
             viewHolder.tvToScore.setText("-");
+            viewHolder.tvFromScoreRew.setText("-");
+            viewHolder.tvToScoreRew.setText("-");
         }
 
         viewHolder.tvAccepted.setText(stattitle);
@@ -108,6 +118,12 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
         TextView tvFromScore;
         @BindView(R.id.tv_to_score)
         TextView tvToScore;
+        @BindView(R.id.tv_from_score_rew)
+        TextView tvFromScoreRew;
+        @BindView(R.id.tv_to_score_rew)
+        TextView tvToScoreRew;
+        @BindView(R.id.ll_rew)
+        LinearLayout llRew;
          View view;
 
         public ViewHolder(@NonNull View itemView) {

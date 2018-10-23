@@ -1,5 +1,7 @@
 package com.mmc.fifulec.service;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 import javax.inject.Inject;
@@ -8,6 +10,7 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
 
+import com.mmc.fifulec.Security;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.repository.SecurityRepository;
@@ -25,12 +28,13 @@ public class UserService {
         this.securityRepository = securityRepository;
     }
 
-    public void create(String nick, String password){
+    public void create(String nick, String password) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         UUID uuid = UUID.randomUUID();
         String s = uuid.toString();
+        Security security = new Security();
         User user = new User().builder()
                 .nick(nick)
-                .password(password)
+                .password(security.secure(password))
                 .uuid(s)
                 .build();
         securityRepository.save(nick, s);

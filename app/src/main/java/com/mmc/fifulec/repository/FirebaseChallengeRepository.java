@@ -1,22 +1,22 @@
 package com.mmc.fifulec.repository;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mmc.fifulec.di.AppScope;
+import com.mmc.fifulec.model.Challenge;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.functions.Predicate;
-import com.mmc.fifulec.di.AppScope;
-import com.mmc.fifulec.model.Challenge;
-import com.mmc.fifulec.model.ChallengeStatus;
 
 @AppScope
 public class FirebaseChallengeRepository implements ChallengeRepository {
@@ -41,14 +41,20 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
 
     @Override
     public void updateChallenge(Challenge challenge) {
-        challenge.setAccepted(true);
         challengesReference.child(challenge.getUuid()).setValue(challenge);
     }
 
     @Override
-    public Observable<Challenge> getChallenge(final String uuid) {
+    public void deleteChallenge(Challenge challenge){
+        database.getReference()
+                .child(CHALLANGES)
+                .child(challenge.getUuid())
+                .removeValue();
+    }
 
-                return Observable.create(new ObservableOnSubscribe<Challenge>() {
+    @Override
+    public Observable<Challenge> getChallenge(final String uuid) {
+        return Observable.create(new ObservableOnSubscribe<Challenge>() {
             @Override
             public void subscribe(final ObservableEmitter<Challenge> emitter) throws Exception {
                 challengesReference.child(uuid).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -69,32 +75,39 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
     }
 
     @Override
-    public Observable<Challenge> listeningForChallengeLive(final String uuid){
-        return Observable.create(new ObservableOnSubscribe<Challenge>() {
+    public Observable<String> observeChallengeChanges(final String uuid){
+        return Observable.create(new ObservableOnSubscribe<String>() {
             @Override
-            public void subscribe(final ObservableEmitter<Challenge> emitter) throws Exception {
-                challengesReference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        for (DataSnapshot ds : dataSnapshot.getChildren()){
-                            Challenge value = ds.getValue(Challenge.class);
-                            emitter.onNext(value);
-                        }
-                        emitter.onComplete();
-                    }
+            public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
+                challengesReference.child(uuid)
+                        .addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                            }
 
-                    }
-                });
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                                emitter.onNext(uuid);
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                emitter.onError(new Exception());
+                            }
+                        });
             }
-        })
-                .filter(new Predicate<Challenge>() {
-                    @Override
-                    public boolean test(Challenge challenge) throws Exception {
-                        return challenge.getToUserUuid().equals(uuid)  && challenge.getChallengeStatus() == ChallengeStatus.NOT_ACCEPTED;
-                    }
-                });
+        });
+
     }
 }

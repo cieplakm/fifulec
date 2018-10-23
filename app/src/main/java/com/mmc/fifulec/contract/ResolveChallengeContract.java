@@ -9,7 +9,9 @@ public interface ResolveChallengeContract {
 
         void showToast(String s);
 
-        void setScores(String from, String to);
+        void setScores(String from, String to, String fromRew, String toRew);
+
+        void setSecondMatchScoresVisibility(boolean isVisible);
     }
 
 }

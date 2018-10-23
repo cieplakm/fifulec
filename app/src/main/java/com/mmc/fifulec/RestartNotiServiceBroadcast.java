@@ -15,8 +15,11 @@ import android.widget.Toast;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.mmc.fifulec.model.Challenge;
+import com.mmc.fifulec.model.ChallengeMapping;
+import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.repository.FirebaseChallengeRepository;
+import com.mmc.fifulec.repository.FirebaseMappingRepository;
 import com.mmc.fifulec.repository.FirebaseSecurityRepository;
 import com.mmc.fifulec.repository.FirebaseUserRepository;
 import com.mmc.fifulec.repository.UserRepository;
@@ -41,6 +44,7 @@ public class RestartNotiServiceBroadcast extends BroadcastReceiver {
         FirebaseDatabase instance = FirebaseDatabase.getInstance();
         final FirebaseChallengeRepository challengeRepository = new FirebaseChallengeRepository(instance);
         FirebaseSecurityRepository securityRepository = new FirebaseSecurityRepository();
+        final FirebaseMappingRepository firebaseMappingRepository = new FirebaseMappingRepository(instance);
         final UserRepository userRepository = new FirebaseUserRepository();
         Preferences preferences = new Preferences(context.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
 
@@ -48,22 +52,35 @@ public class RestartNotiServiceBroadcast extends BroadcastReceiver {
 
         if (nick != null){
             securityRepository.uuidByNickObservable(nick)
-                    .flatMap(new Function<String, ObservableSource<Challenge>>() {
+                    .flatMap(new Function<String, ObservableSource<ChallengeMapping>>() {
                         @Override
-                        public ObservableSource<Challenge> apply(String uuid) throws Exception {
-                            return challengeRepository.listeningForChallengeLive(uuid);
+                        public ObservableSource<ChallengeMapping> apply(String uuid) throws Exception {
+                            return firebaseMappingRepository.maping(uuid);
+                        }
+                    })
+                    .flatMap(new Function<ChallengeMapping, ObservableSource<Challenge>>() {
+                        @Override
+                        public ObservableSource<Challenge> apply(ChallengeMapping challengeMapping) throws Exception {
+                            return challengeRepository.getChallenge(challengeMapping.getChallengeUuid());
+                        }
+                    })
+                    .filter(new Predicate<Challenge>() {
+                        @Override
+                        public boolean test(Challenge challenge) throws Exception {
+                                 return challenge.getChallengeStatus() == ChallengeStatus.NOT_ACCEPTED;
                         }
                     })
                     .flatMap(new Function<Challenge, ObservableSource<User>>() {
                         @Override
                         public ObservableSource<User> apply(Challenge challenge) throws Exception {
+
                             return userRepository.userByUuidObservable(challenge.getFromUserUuid());
                         }
                     })
                     .map(new Function<User, String>() {
                         @Override
                         public String apply(User user) throws Exception {
-                            return user.getNick();
+                          return user.getNick();
                         }
                     })
                     .subscribeOn(Schedulers.io())
@@ -88,12 +105,10 @@ public class RestartNotiServiceBroadcast extends BroadcastReceiver {
 
                         @Override
                         public void onError(Throwable e) {
-
                         }
 
                         @Override
                         public void onComplete() {
-
                         }
                     });
         }
@@ -103,7 +118,7 @@ public class RestartNotiServiceBroadcast extends BroadcastReceiver {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, ii, PendingIntent.FLAG_UPDATE_CURRENT);
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 60*5*1000L, pendingIntent);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5*60*1000L, pendingIntent);
         Log.e("TESTYY", "SETED!");
     }
 

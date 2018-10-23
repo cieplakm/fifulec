@@ -1,5 +1,6 @@
 package com.mmc.fifulec.presenter;
 
+import com.mmc.fifulec.Security;
 import com.mmc.fifulec.contract.LoginContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.User;
@@ -58,7 +59,9 @@ public class LoginPresenter {
                 .doOnNext(new Consumer<User>() {
                     @Override
                     public void accept(User user) throws Exception {
-                        if (!user.getPassword().equals(properPass)){
+                        Security security = new Security();
+                        String p = security.secure(properPass);
+                        if (!user.getPassword().equalsIgnoreCase(p)){
                             throw new Exception("Błędne hasło");
                         }
                     }

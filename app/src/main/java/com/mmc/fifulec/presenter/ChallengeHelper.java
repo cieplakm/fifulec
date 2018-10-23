@@ -1,6 +1,7 @@
 package com.mmc.fifulec.presenter;
 
 import com.mmc.fifulec.model.Challenge;
+import com.mmc.fifulec.model.Scores;
 import com.mmc.fifulec.model.User;
 
 public class ChallengeHelper {
@@ -23,8 +24,8 @@ public class ChallengeHelper {
         return 0;
     }
 
-    public static boolean isUserWin(User user, Challenge challenge){
-        return challenge.getScores().getFrom().getUuid().equals(user.getUuid()) && challenge.getScores().getFrom().getValue() > challenge.getScores().getTo().getValue() ||
-                challenge.getScores().getTo().getUuid().equals(user.getUuid()) && challenge.getScores().getTo().getValue() > challenge.getScores().getFrom().getValue();
+    public static boolean isUserWin(User user, Scores scores){
+        return scores.getFrom().getUuid().equals(user.getUuid()) && scores.getFrom().getValue() > scores.getTo().getValue() ||
+                scores.getTo().getUuid().equals(user.getUuid()) && scores.getTo().getValue() > scores.getFrom().getValue();
     }
 }

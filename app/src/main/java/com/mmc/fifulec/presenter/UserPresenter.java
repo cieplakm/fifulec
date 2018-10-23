@@ -54,6 +54,9 @@ public class UserPresenter {
 
         final User user = appContext.getUser();
 
+
+        cleanNotAcceptedRequests();
+
         final Observable<Challenge> challengeObservable = challengeService.challengesPerUser(user)
                 .filter(new Predicate<Challenge>() {
                     @Override
@@ -82,12 +85,17 @@ public class UserPresenter {
                 });
 
         Observable<Pair<Integer, Integer>> pairObservable = challengeObservable
-                .map(new Function<Challenge, Pair<Integer, Integer>>() {
+                .flatMap(new Function<Challenge, ObservableSource<Scores>>() {
                     @Override
-                    public Pair<Integer, Integer> apply(Challenge challenge) throws Exception {
+                    public ObservableSource<Scores> apply(Challenge challenge) throws Exception {
+                        return Observable.fromIterable(challenge.getScores());
+                    }
+                })
+                .map(new Function<Scores, Pair<Integer, Integer>>() {
+                    @Override
+                    public Pair<Integer, Integer> apply(Scores scores) throws Exception {
                         Score gainScore;
                         Score loseScore;
-                        Scores scores = challenge.getScores();
                         if (scores.getFrom().getUuid().equals(user.getUuid())) {
                             gainScore = scores.getFrom();
                             loseScore = scores.getTo();
@@ -143,13 +151,20 @@ public class UserPresenter {
             }
         });
 
-        Observable<GroupedObservable<ChallengeScoreType, Challenge>> groupedObservableObservable = challengeObservable
-                .groupBy(new Function<Challenge, ChallengeScoreType>() {
+        Observable<GroupedObservable<ChallengeScoreType, Scores>> groupedObservableObservable =
+                challengeObservable
+                        .flatMap(new Function<Challenge, ObservableSource<Scores>>() {
+                            @Override
+                            public ObservableSource<Scores> apply(Challenge challenge) throws Exception {
+                                return Observable.fromIterable(challenge.getScores());
+                            }
+                        })
+                .groupBy(new Function<Scores, ChallengeScoreType>() {
                     @Override
-                    public ChallengeScoreType apply(Challenge challenge) throws Exception {
-                        if (ChallengeHelper.isUserWin(user, challenge)) {
+                    public ChallengeScoreType apply(Scores scores) throws Exception {
+                        if (ChallengeHelper.isUserWin(user, scores)) {
                             return ChallengeScoreType.WIN;
-                        } else if (challenge.getScores().getFrom().getValue() == challenge.getScores().getTo().getValue()) {
+                        } else if (scores.getFrom().getValue() == scores.getTo().getValue()) {
                             return ChallengeScoreType.DRAW;
                         } else {
                             return ChallengeScoreType.LOSE;
@@ -158,9 +173,10 @@ public class UserPresenter {
                 });
 
 
-        groupedObservableObservable.flatMap(new Function<GroupedObservable<ChallengeScoreType, Challenge>, ObservableSource<Pair<ChallengeScoreType, Integer>>>() {
+        groupedObservableObservable
+                .flatMap(new Function<GroupedObservable<ChallengeScoreType, Scores>, ObservableSource<Pair<ChallengeScoreType, Integer>>>() {
             @Override
-            public ObservableSource<Pair<ChallengeScoreType, Integer>> apply(final GroupedObservable<ChallengeScoreType, Challenge> challengeScoreTypeChallengeGroupedObservable) throws Exception {
+            public ObservableSource<Pair<ChallengeScoreType, Integer>> apply(final GroupedObservable<ChallengeScoreType, Scores> challengeScoreTypeChallengeGroupedObservable) throws Exception {
                 return challengeScoreTypeChallengeGroupedObservable.count().toObservable()
                         .map(new Function<Long, Pair<ChallengeScoreType, Integer>>() {
                             @Override
@@ -197,5 +213,9 @@ public class UserPresenter {
 
                     }
                 });
+    }
+
+    private void cleanNotAcceptedRequests() {
+        challengeService.cleanUnAcceptedRequest(appContext.getUser());
     }
 }

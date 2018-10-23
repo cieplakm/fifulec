@@ -51,6 +51,8 @@ public class UserListActivity extends AppCompatActivity implements UsersListCont
         userListAdapter.setClosable(this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(userListAdapter);
+
+        getSupportActionBar().setTitle("Wybierz przeciwnika");
     }
 
     @Override

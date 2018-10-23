@@ -1,7 +1,9 @@
 package com.mmc.fifulec.repository;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +33,67 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
                 .child(userUuid)
                 .child(mapping.getUuid())
                 .setValue(mapping);
+    }
+
+    @Override
+    public void delete(String challengeUuid, String fromUserUuid, String toUserUuid){
+        delete(challengeUuid, fromUserUuid);
+        delete(challengeUuid, toUserUuid);
+    }
+
+    @Override
+    public Observable<String> observeChanges(final String userUuid) {
+       return Observable.create(new ObservableOnSubscribe<String>() {
+           @Override
+           public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
+               challengesReference.child(userUuid)
+                       .addChildEventListener(new ChildEventListener() {
+                           @Override
+                           public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                               emitter.onNext("");
+                           }
+
+                           @Override
+                           public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                           }
+
+                           @Override
+                           public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                           }
+
+                           @Override
+                           public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                           }
+
+                           @Override
+                           public void onCancelled(@NonNull DatabaseError databaseError) {
+                               emitter.onError(new Exception());
+                           }
+                       });
+           }
+       });
+
+    }
+
+    private void delete(String challengeUuid, String userUuid){
+        challengesReference
+                .child(userUuid)
+                .orderByChild("challengeUuid")
+                .equalTo(challengeUuid)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        dataSnapshot.getRef().removeValue();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
     }
 
     @Override

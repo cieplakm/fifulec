@@ -2,10 +2,12 @@ package com.mmc.fifulec.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 
 import javax.inject.Inject;
 
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import butterknife.BindView;
@@ -22,6 +24,12 @@ public class ResolveChallengeActivity extends AppCompatActivity implements Resol
     EditText etScore4FromUser;
     @BindView(R.id.et_score_to_user)
     EditText etScore4ToUser;
+    @BindView(R.id.et_score_from_user_rew)
+    EditText etScore4FromUserRew;
+    @BindView(R.id.et_score_to_user_rew)
+    EditText etScore4ToUserRew;
+    @BindView(R.id.second_match)
+    LinearLayout llSecondMatch;
 
     @BindView(R.id.tv_from_user_nick)
     TextView tvFromUserNick;
@@ -45,7 +53,8 @@ public class ResolveChallengeActivity extends AppCompatActivity implements Resol
 
     @OnClick(R.id.btn_confirm)
     public void onConfirmClicked(){
-        presenter.onConfirmClicked(etScore4FromUser.getText().toString(), etScore4ToUser.getText().toString());
+        presenter.onConfirmClicked(etScore4FromUser.getText().toString(), etScore4ToUser.getText().toString(),
+                etScore4FromUserRew.getText().toString(), etScore4ToUserRew.getText().toString());
     }
 
     @Override
@@ -60,8 +69,15 @@ public class ResolveChallengeActivity extends AppCompatActivity implements Resol
     }
 
     @Override
-    public void setScores(String from, String to) {
+    public void setScores(String from, String to, String fromRew, String toRew) {
         etScore4FromUser.setText(from);
         etScore4ToUser.setText(to);
+        etScore4FromUserRew.setText(fromRew);
+        etScore4ToUserRew.setText(toRew);
+    }
+
+    @Override
+    public void setSecondMatchScoresVisibility(boolean isVisible){
+        llSecondMatch.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 }

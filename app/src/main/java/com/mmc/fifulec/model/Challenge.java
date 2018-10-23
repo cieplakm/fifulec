@@ -1,6 +1,6 @@
 package com.mmc.fifulec.model;
 
-import com.google.firebase.database.Exclude;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +17,9 @@ public class Challenge {
     private String fromUserNick;
     private String toUserUuid;
     private String toUserNick;
-    private boolean isAccepted;
     private ChallengeStatus challengeStatus;
     private int amountMatches;
-    private Scores scores;
+    private List<Scores> scores;
     private long timestamp;
+    private boolean twoLeggedTie;
 }

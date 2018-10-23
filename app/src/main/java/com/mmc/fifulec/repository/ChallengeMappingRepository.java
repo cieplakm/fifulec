@@ -8,4 +8,8 @@ public interface ChallengeMappingRepository {
     void mapping(String userUuid, ChallengeMapping mapping);
 
     Observable<ChallengeMapping> maping(String userUuid);
+
+    void delete(String challengeUuid, String fromUserUuid, String toUserUuid);
+
+    Observable<String> observeChanges(String userUuid);
 }

@@ -7,15 +7,19 @@ import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.model.OnChallengeClickedListener;
 import com.mmc.fifulec.model.OnChallengeConfirm;
 import com.mmc.fifulec.model.OnUserClickedListener;
+import com.mmc.fifulec.model.OpponentSelected;
 import com.mmc.fifulec.model.User;
+import com.mmc.fifulec.service.ChallengeMappingService;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Observable;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Predicate;
@@ -27,11 +31,13 @@ public class ChallengeListPresenter {
     private ChallengeListContract.View view;
 
     private final ChallengeService challengeService;
+    private ChallengeMappingService challengeMappingService;
     private AppContext appContext;
 
     @Inject
-    public ChallengeListPresenter(ChallengeService challengeService, AppContext appContext) {
+    public ChallengeListPresenter(ChallengeService challengeService, ChallengeMappingService challengeMappingService,  AppContext appContext) {
         this.challengeService = challengeService;
+        this.challengeMappingService = challengeMappingService;
         this.appContext = appContext;
     }
 
@@ -70,6 +76,31 @@ public class ChallengeListPresenter {
                 updateChallengesList();
             }
         });
+
+
+//        io.reactivex.Observable.merge(challengeMappingService.observeMappingChanges(appContext.getUser().getUuid()),
+        challengeService.loockingForUpdate(appContext.getUser())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        updateChallengesList();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
     }
 
     private void rejectChallenge(Challenge challenge) {
@@ -144,8 +175,8 @@ public class ChallengeListPresenter {
     public void onAddChallengeClicked() {
         appContext.setOnUserClickedListener(new OnUserClickedListener() {
             @Override
-            public void onUserSelect(final User user) {
-                challengeService.getNotAcceptedChallenge(appContext.getUser(), user)
+            public void onUserSelect(final OpponentSelected opponentSelected) {
+                challengeService.getNotAcceptedChallenge(appContext.getUser(), opponentSelected.getUser())
                         .count()
                         .subscribe(new SingleObserver<Long>() {
                             @Override
@@ -155,11 +186,11 @@ public class ChallengeListPresenter {
                             @Override
                             public void onSuccess(Long aLong) {
                                 if (aLong == null || aLong == 0) {
-                                    view.showToast("Wyzwanie wysłane do " + user.getNick());
-                                    challengeService.createChallenge(appContext.getUser(), user);
+                                    view.showToast("Wyzwanie wysłane do " + opponentSelected.getUser().getNick());
+                                    challengeService.createChallenge(appContext.getUser(), opponentSelected.getUser(), opponentSelected.isTwoLeggedTie());
                                     updateChallengesList();
                                 } else {
-                                    view.showToast("Istnieje nie zaakceptowane wyzwanie z " + user.getNick());
+                                    view.showToast("Istnieje nie zaakceptowane wyzwanie z " + opponentSelected.getUser().getNick());
                                 }
                             }
 
