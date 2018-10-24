@@ -2,6 +2,7 @@ package com.mmc.fifulec.repository;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -50,7 +51,10 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
                        .addChildEventListener(new ChildEventListener() {
                            @Override
                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                               emitter.onNext("");
+
+                               ChallengeMapping value = dataSnapshot.getValue(ChallengeMapping.class);
+                               Log.e("EVENTYY", "new challange id: " + value.getChallengeUuid());
+                               emitter.onNext(value.getChallengeUuid());
                            }
 
                            @Override

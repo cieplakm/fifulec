@@ -177,14 +177,8 @@ public class ChallengeService {
     }
 
     /**Return Challenge uuid*/
-    public Observable<String> loockingForUpdate(User user){
-        return challengesPerUser(user)
-                .flatMap(new Function<Challenge, ObservableSource<String>>() {
-                    @Override
-                    public ObservableSource<String> apply(Challenge challenge) throws Exception {
-                        return challengeRepository.observeChallengeChanges(challenge.getUuid());
-                    }
-                })
+    public Observable<String> loockingForUpdate(String challangeUuid){
+        return challengeRepository.observeChallengeChanges(challangeUuid)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }

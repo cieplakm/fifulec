@@ -8,20 +8,21 @@ import com.mmc.fifulec.model.OnChallengeClickedListener;
 import com.mmc.fifulec.model.OnChallengeConfirm;
 import com.mmc.fifulec.model.OnUserClickedListener;
 import com.mmc.fifulec.model.OpponentSelected;
-import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.service.ChallengeMappingService;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Observable;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
 
@@ -34,8 +35,30 @@ public class ChallengeListPresenter {
     private ChallengeMappingService challengeMappingService;
     private AppContext appContext;
 
+    Observer<String> observer4Update = new Observer<String>() {
+        @Override
+        public void onSubscribe(Disposable d) {
+
+        }
+
+        @Override
+        public void onNext(String s) {
+            updateChallengesList();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
+    };
+
     @Inject
-    public ChallengeListPresenter(ChallengeService challengeService, ChallengeMappingService challengeMappingService,  AppContext appContext) {
+    public ChallengeListPresenter(ChallengeService challengeService, ChallengeMappingService challengeMappingService, AppContext appContext) {
         this.challengeService = challengeService;
         this.challengeMappingService = challengeMappingService;
         this.appContext = appContext;
@@ -77,30 +100,30 @@ public class ChallengeListPresenter {
             }
         });
 
-
-//        io.reactivex.Observable.merge(challengeMappingService.observeMappingChanges(appContext.getUser().getUuid()),
-        challengeService.loockingForUpdate(appContext.getUser())
-                .subscribe(new Observer<String>() {
+        Observable<String> currChanged = challengeService.challengesPerUser(appContext.getUser())
+                .map(new Function<Challenge, String>() {
                     @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        updateChallengesList();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
+                    public String apply(Challenge challenge) throws Exception {
+                        return challenge.getUuid();
                     }
                 });
+
+        Observable<String> challAdded = challengeMappingService.observeMappingChanges(appContext.getUser().getUuid());
+
+
+
+        Observable.merge(challAdded, currChanged)
+                .flatMap(new Function<String, ObservableSource<String>>() {
+                    @Override
+                    public ObservableSource<String> apply(String s) throws Exception {
+                        return challengeService.loockingForUpdate(s);
+                    }
+                })
+                .subscribe(observer4Update);
+                challAdded.subscribe(observer4Update);
+
+
+
     }
 
     private void rejectChallenge(Challenge challenge) {
