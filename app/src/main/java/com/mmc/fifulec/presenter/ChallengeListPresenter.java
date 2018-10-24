@@ -17,12 +17,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
 
@@ -100,30 +97,8 @@ public class ChallengeListPresenter {
             }
         });
 
-        Observable<String> currChanged = challengeService.challengesPerUser(appContext.getUser())
-                .map(new Function<Challenge, String>() {
-                    @Override
-                    public String apply(Challenge challenge) throws Exception {
-                        return challenge.getUuid();
-                    }
-                });
-
-        Observable<String> challAdded = challengeMappingService.observeMappingChanges(appContext.getUser().getUuid());
-
-
-
-        Observable.merge(challAdded, currChanged)
-                .flatMap(new Function<String, ObservableSource<String>>() {
-                    @Override
-                    public ObservableSource<String> apply(String s) throws Exception {
-                        return challengeService.loockingForUpdate(s);
-                    }
-                })
+        challengeService.observeChallengeChanges(appContext.getUser())
                 .subscribe(observer4Update);
-                challAdded.subscribe(observer4Update);
-
-
-
     }
 
     private void rejectChallenge(Challenge challenge) {

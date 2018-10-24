@@ -16,5 +16,7 @@ public interface UserContract {
         void setDrawAmount(String draws);
 
         void setLoseAmount(String loses);
+
+        void setNotiSwitchActive(boolean notificationActive);
     }
 }

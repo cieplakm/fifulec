@@ -1,4 +1,4 @@
-package com.mmc.fifulec;
+package com.mmc.fifulec.broadcastreciver;
 
 import android.app.AlarmManager;
 import android.app.NotificationChannel;
@@ -11,9 +11,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.mmc.fifulec.R;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.ChallengeMapping;
 import com.mmc.fifulec.model.ChallengeStatus;
@@ -37,10 +37,9 @@ import io.reactivex.schedulers.Schedulers;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class RestartNotiServiceBroadcast extends BroadcastReceiver {
+public class NotificationBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.e("TESTYY", "Restart");
         FirebaseDatabase instance = FirebaseDatabase.getInstance();
         final FirebaseChallengeRepository challengeRepository = new FirebaseChallengeRepository(instance);
         FirebaseSecurityRepository securityRepository = new FirebaseSecurityRepository();
@@ -112,14 +111,6 @@ public class RestartNotiServiceBroadcast extends BroadcastReceiver {
                         }
                     });
         }
-
-
-        Intent ii = new Intent(context, RestartNotiServiceBroadcast.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, ii, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5*60*1000L, pendingIntent);
-        Log.e("TESTYY", "SETED!");
     }
 
     private void showNotification(List<String> challenges, Context context) {

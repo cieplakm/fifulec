@@ -51,9 +51,7 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
                        .addChildEventListener(new ChildEventListener() {
                            @Override
                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                                ChallengeMapping value = dataSnapshot.getValue(ChallengeMapping.class);
-                               Log.e("EVENTYY", "new challange id: " + value.getChallengeUuid());
                                emitter.onNext(value.getChallengeUuid());
                            }
 

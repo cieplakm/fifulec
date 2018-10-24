@@ -1,5 +1,7 @@
 package com.mmc.fifulec.service;
 
+import android.support.v4.media.MediaBrowserCompat;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -176,9 +178,33 @@ public class ChallengeService {
         });
     }
 
-    /**Return Challenge uuid*/
-    public Observable<String> loockingForUpdate(String challangeUuid){
-        return challengeRepository.observeChallengeChanges(challangeUuid)
+    public Observable<String> observeChallengeChanges(User user) {
+
+        Observable<String> currChanged = challengesPerUser(user)
+                .filter(new Predicate<Challenge>() {
+                    @Override
+                    public boolean test(Challenge challenge) throws Exception {
+                        return challenge.getChallengeStatus() != ChallengeStatus.FINISHED
+                                || challenge.getChallengeStatus() != ChallengeStatus.REJECTED;
+                    }
+                })
+                .map(new Function<Challenge, String>() {
+                    @Override
+                    public String apply(Challenge challenge) throws Exception {
+                        return challenge.getUuid();
+                    }
+                });
+
+        Observable<String> challAdded = challengeMappingService.observeMappingChanges(user.getUuid());
+
+        return challAdded.mergeWith(currChanged)
+                .flatMap(new Function<String, ObservableSource<String>>() {
+                    @Override
+                    public ObservableSource<String> apply(String s) throws Exception {
+                        return challengeRepository.observeChallengeChanges(s);
+                    }
+                })
+                .mergeWith(challAdded)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }

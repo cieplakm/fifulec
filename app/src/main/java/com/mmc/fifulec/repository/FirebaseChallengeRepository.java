@@ -15,8 +15,8 @@ import com.mmc.fifulec.model.Challenge;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 @AppScope
 public class FirebaseChallengeRepository implements ChallengeRepository {
@@ -24,6 +24,7 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
 
     private FirebaseDatabase database;
     private DatabaseReference challengesReference;
+
 
     @Inject
     public FirebaseChallengeRepository(FirebaseDatabase database) {
@@ -45,7 +46,7 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
     }
 
     @Override
-    public void deleteChallenge(Challenge challenge){
+    public void deleteChallenge(Challenge challenge) {
         database.getReference()
                 .child(CHALLANGES)
                 .child(challenge.getUuid())
@@ -54,60 +55,62 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
 
     @Override
     public Observable<Challenge> getChallenge(final String uuid) {
-        return Observable.create(new ObservableOnSubscribe<Challenge>() {
-            @Override
-            public void subscribe(final ObservableEmitter<Challenge> emitter) throws Exception {
-                challengesReference.child(uuid).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Challenge value = dataSnapshot.getValue(Challenge.class);
-                        emitter.onNext(value);
-                        emitter.onComplete();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        emitter.onError(new Exception());
-                    }
-                });
-            }
-        });
+        Subject<Challenge> subject = PublishSubject.create();
+        challengesReference.child(uuid).addListenerForSingleValueEvent(retrieveValue(subject));
+        return subject;
     }
 
     @Override
-    public Observable<String> observeChallengeChanges(final String uuid){
-        return Observable.create(new ObservableOnSubscribe<String>() {
+    public Observable<String> observeChallengeChanges(String challengeId) {
+        Subject<String> subject = PublishSubject.create();
+        challengesReference.child(challengeId).addChildEventListener(mappingAddedListener(challengeId, subject));
+        return subject;
+    }
+
+    private ChildEventListener mappingAddedListener(final String challengeId, final Subject<String> subject) {
+        return new ChildEventListener() {
             @Override
-            public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
-                challengesReference.child(uuid)
-                        .addChildEventListener(new ChildEventListener() {
-                            @Override
-                            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            }
-
-                            @Override
-                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                                emitter.onNext(uuid);
-                            }
-
-                            @Override
-                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                            }
-
-                            @Override
-                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                emitter.onError(new Exception());
-                            }
-                        });
             }
-        });
 
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                subject.onNext(challengeId);
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                subject.onError(new Exception());
+            }
+
+
+        };
+    }
+
+    private ValueEventListener retrieveValue(final Subject<Challenge> subject) {
+        return new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Challenge value = dataSnapshot.getValue(Challenge.class);
+                subject.onNext(value);
+                subject.onComplete();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                subject.onError(new Exception());
+            }
+        };
     }
 }

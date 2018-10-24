@@ -1,7 +1,9 @@
 package com.mmc.fifulec.presenter;
 
+import android.content.Context;
 import android.util.Pair;
 
+import com.mmc.fifulec.broadcastreciver.Alarm;
 import com.mmc.fifulec.contract.UserContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.Challenge;
@@ -12,6 +14,7 @@ import com.mmc.fifulec.model.Scores;
 import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
+import com.mmc.fifulec.utils.Preferences;
 
 import java.util.List;
 
@@ -34,11 +37,13 @@ public class UserPresenter {
     private UserContract.View view;
     private AppContext appContext;
     private ChallengeService challengeService;
+    private Preferences preferences;
 
     @Inject
-    public UserPresenter(AppContext appContext, ChallengeService challengeService) {
+    public UserPresenter(AppContext appContext, ChallengeService challengeService, Preferences preferences) {
         this.appContext = appContext;
         this.challengeService = challengeService;
+        this.preferences = preferences;
     }
 
     public void onCreate(final UserContract.View view) {
@@ -51,6 +56,9 @@ public class UserPresenter {
 
     public void onResume() {
         view.setUserNickTitle(appContext.getUser().getNick());
+
+
+        setupNotification();
 
         final User user = appContext.getUser();
 
@@ -215,7 +223,26 @@ public class UserPresenter {
                 });
     }
 
+    private void setupNotification() {
+        view.setNotiSwitchActive(preferences.isNotificationActive());
+
+    }
+
     private void cleanNotAcceptedRequests() {
         challengeService.cleanUnAcceptedRequest(appContext.getUser());
+    }
+
+    public void onNotiSwitchChanged(boolean isChecked) {
+        preferences.putNotificationActive(isChecked);
+        switchNotificationAlarm(isChecked);
+    }
+
+    private void switchNotificationAlarm(boolean isChecked) {
+        Alarm alarm = new Alarm((Context) view);
+        if (isChecked){
+            alarm.on();
+        }else {
+            alarm.off();
+        }
     }
 }
