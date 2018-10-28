@@ -21,10 +21,13 @@ import com.mmc.fifulec.model.User;
 @AppScope
 public class FirebaseUserRepository implements UserRepository {
 
-    private DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("users");
+    private DatabaseReference reference;
+    private FirebaseDatabase database;
 
     @Inject
-    public FirebaseUserRepository() {
+    public FirebaseUserRepository(FirebaseDatabase database) {
+        this.database = database;
+        reference = database.getReference().child("users");
     }
 
     @Override

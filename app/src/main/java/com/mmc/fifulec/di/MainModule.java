@@ -34,14 +34,14 @@ public class MainModule {
 
     @Provides
     @AppScope
-    public SecurityRepository loginRepository(){
-        return new FirebaseSecurityRepository();
+    public SecurityRepository loginRepository(FirebaseDatabase firebaseDatabase){
+        return new FirebaseSecurityRepository(firebaseDatabase);
     }
 
     @Provides
     @AppScope
-    public UserRepository userRepository(){
-        return new FirebaseUserRepository();
+    public UserRepository userRepository(FirebaseDatabase firebaseDatabase){
+        return new FirebaseUserRepository(firebaseDatabase);
     }
 
     @Provides

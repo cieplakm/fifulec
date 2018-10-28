@@ -25,5 +25,7 @@ public interface ChallengeListContract {
         void showConfirmDialog(OnChallengeConfirm onChallengeConfirm);
 
         void showToast(String message);
+
+        void showDaialogToCancelChallenge(Challenge challenge);
     }
 }

@@ -146,6 +146,28 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
     }
 
     @Override
+    public void showDaialogToCancelChallenge(final Challenge challenge) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        presenter.onChallengeCancel(challenge);
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Czy chcesz anulować wyzwanie?").setPositiveButton("Tak", dialogClickListener)
+                .setNegativeButton("Nie", dialogClickListener).show();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         presenter.onPause();

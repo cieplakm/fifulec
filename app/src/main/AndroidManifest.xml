@@ -30,6 +30,8 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".broadcastreciver.NotificationBroadcast" />
+        <receiver android:name=".broadcastreciver.RemoveUnAcceptedChallenges" />
+        <receiver android:name=".broadcastreciver.AcceptChallengeBR" />
 
 
     </application>

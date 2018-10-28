@@ -2,6 +2,7 @@ package com.mmc.fifulec.broadcastreciver;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
@@ -12,20 +13,20 @@ public class Alarm {
         this.context = context;
     }
 
-    public void on(){
+    public void on(Class<? extends BroadcastReceiver> br, long interval){
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        Intent i = new Intent(context, NotificationBroadcast.class);
+        Intent i = new Intent(context, br);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, i, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000L, 60*1000L, pendingIntent);
+        am.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000L, interval, pendingIntent);
     }
 
-    public void off(){
+    public void off(Class<? extends BroadcastReceiver> br){
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        Intent i = new Intent(context, NotificationBroadcast.class);
+        Intent i = new Intent(context, br);
 
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 1, i, PendingIntent.FLAG_UPDATE_CURRENT);
 

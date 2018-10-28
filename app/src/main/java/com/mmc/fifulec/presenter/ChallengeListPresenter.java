@@ -1,5 +1,8 @@
 package com.mmc.fifulec.presenter;
 
+import android.content.Context;
+
+import com.mmc.fifulec.Notification;
 import com.mmc.fifulec.contract.ChallengeListContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.Challenge;
@@ -17,6 +20,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
@@ -77,6 +81,8 @@ public class ChallengeListPresenter {
                     case NOT_ACCEPTED:
                         if (appContext.getUser().getUuid().equals(challenge.getToUserUuid())) {
                             showQuestionAboutAcceptance(challenge);
+                        }else {
+                            showQuestionCancelAcceptance(challenge);
                         }
                         break;
                     case FINISHED:
@@ -99,6 +105,10 @@ public class ChallengeListPresenter {
 
         challengeService.observeChallengeChanges(appContext.getUser())
                 .subscribe(observer4Update);
+    }
+
+    private void showQuestionCancelAcceptance(Challenge challenge) {
+        view.showDaialogToCancelChallenge(challenge);
     }
 
     private void rejectChallenge(Challenge challenge) {
@@ -174,7 +184,8 @@ public class ChallengeListPresenter {
         appContext.setOnUserClickedListener(new OnUserClickedListener() {
             @Override
             public void onUserSelect(final OpponentSelected opponentSelected) {
-                challengeService.getNotAcceptedChallenge(appContext.getUser(), opponentSelected.getUser())
+                Observable.merge(challengeService.getNotAcceptedChallenge(appContext.getUser(), opponentSelected.getUser()),
+                        challengeService.getNotAcceptedChallenge(opponentSelected.getUser(), appContext.getUser()))
                         .count()
                         .subscribe(new SingleObserver<Long>() {
                             @Override
@@ -205,6 +216,8 @@ public class ChallengeListPresenter {
     public void onChallengeAccepted(Challenge challenge) {
         challengeService.acceptChallenge(challenge);
         updateChallengesList();
+
+        new Notification((Context)view).cancel();
     }
 
     public void onResume() {
@@ -222,5 +235,9 @@ public class ChallengeListPresenter {
 
     public void onSwipe() {
         updateChallengesList();
+    }
+
+    public void onChallengeCancel(Challenge challenge) {
+        challengeService.delete(challenge);
     }
 }

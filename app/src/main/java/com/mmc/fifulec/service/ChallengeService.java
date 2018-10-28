@@ -1,6 +1,14 @@
 package com.mmc.fifulec.service;
 
-import android.support.v4.media.MediaBrowserCompat;
+import com.mmc.fifulec.di.AppScope;
+import com.mmc.fifulec.model.Challenge;
+import com.mmc.fifulec.model.ChallengeMapping;
+import com.mmc.fifulec.model.ChallengeStatus;
+import com.mmc.fifulec.model.Score;
+import com.mmc.fifulec.model.Scores;
+import com.mmc.fifulec.model.User;
+import com.mmc.fifulec.repository.ChallengeRepository;
+import com.mmc.fifulec.repository.UserRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,30 +25,18 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
-import com.mmc.fifulec.di.AppScope;
-import com.mmc.fifulec.model.Challenge;
-import com.mmc.fifulec.model.ChallengeMapping;
-import com.mmc.fifulec.model.ChallengeStatus;
-import com.mmc.fifulec.model.Score;
-import com.mmc.fifulec.model.Scores;
-import com.mmc.fifulec.model.User;
-import com.mmc.fifulec.repository.ChallengeRepository;
-import com.mmc.fifulec.repository.UserRepository;
 
 @AppScope
 public class ChallengeService {
 
     private static final long HOUR = 1000L * 60 * 60;
     private final ChallengeRepository challengeRepository;
-    private final UserRepository userRepository;
     private ChallengeMappingService challengeMappingService;
 
     @Inject
     public ChallengeService(ChallengeRepository challengeRepository,
-                            UserRepository userRepository,
                             ChallengeMappingService challengeMappingService) {
         this.challengeRepository = challengeRepository;
-        this.userRepository = userRepository;
         this.challengeMappingService = challengeMappingService;
     }
 
@@ -63,7 +59,7 @@ public class ChallengeService {
         return uuid.toString();
     }
 
-    public void delete(Challenge challenge){
+    public void delete(Challenge challenge) {
         challengeRepository.deleteChallenge(challenge);
         challengeMappingService.delete(challenge);
     }
@@ -86,14 +82,14 @@ public class ChallengeService {
 
         List<Scores> scoresList;
 
-        if (challenge.isTwoLeggedTie()){
+        if (challenge.isTwoLeggedTie()) {
             Scores scoresRew = Scores.builder()
                     .from(new Score(challenge.getFromUserUuid(), fromRew))
                     .to(new Score(challenge.getToUserUuid(), toRew))
                     .build();
 
             scoresList = Arrays.asList(scores, scoresRew);
-        }else {
+        } else {
             scoresList = Collections.singletonList(scores);
         }
 
@@ -138,46 +134,6 @@ public class ChallengeService {
                 .subscribeOn(Schedulers.io());
     }
 
-    public void cleanUnAcceptedRequest(User withUser) {
-        challengeMappingService.mapping4User(withUser.getUuid())
-                .flatMap(new Function<ChallengeMapping, ObservableSource<Challenge>>() {
-                    @Override
-                    public ObservableSource<Challenge> apply(ChallengeMapping challengeMapping) throws Exception {
-                        return challengeRepository.getChallenge(challengeMapping.getChallengeUuid());
-                    }
-                })
-                .filter(new Predicate<Challenge>() {
-                    @Override
-                    public boolean test(Challenge challenge) throws Exception {
-                        return challenge.getChallengeStatus() == ChallengeStatus.NOT_ACCEPTED
-                                && challenge.getTimestamp() + HOUR < System.currentTimeMillis();
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-        .subscribe(new Observer<Challenge>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(Challenge challenge) {
-                delete(challenge);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
-    }
-
     public Observable<String> observeChallengeChanges(User user) {
 
         Observable<String> currChanged = challengesPerUser(user)
@@ -208,4 +164,5 @@ public class ChallengeService {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }
+
 }

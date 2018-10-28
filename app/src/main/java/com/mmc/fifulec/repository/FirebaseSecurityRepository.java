@@ -20,10 +20,11 @@ import io.reactivex.schedulers.Schedulers;
 public class FirebaseSecurityRepository implements SecurityRepository {
 
     private static final String UUIDS = "uuids";
-    private FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private FirebaseDatabase database;
 
     @Inject
-    public FirebaseSecurityRepository() {
+    public FirebaseSecurityRepository(FirebaseDatabase database) {
+        this.database = database;
     }
 
     @Override
