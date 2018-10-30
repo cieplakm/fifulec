@@ -1,4 +1,4 @@
-package com.mmc.fifulec;
+package com.mmc.fifulec.utils;
 
 import android.util.Pair;
 
@@ -33,7 +33,13 @@ public class StatsMaper {
     }
 
     public Single<Long> amountChallenge() {
-        return finishedChallenges.count();
+        return finishedChallenges
+                .flatMap(new Function<Challenge, ObservableSource<?>>() {
+                    @Override
+                    public ObservableSource<?> apply(Challenge challenge) throws Exception {
+                        return Observable.fromIterable(challenge.getScores());
+                    }
+                }).count();
     }
 
     public Observable<String> goalBalance(final String userId) {

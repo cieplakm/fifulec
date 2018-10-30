@@ -88,7 +88,10 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        dataSnapshot.getRef().removeValue();
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            String key = snapshot.getKey();
+                            dataSnapshot.child(key).getRef().removeValue();
+                        }
                     }
 
                     @Override

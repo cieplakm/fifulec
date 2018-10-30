@@ -1,15 +1,17 @@
 package com.mmc.fifulec;
 
+import com.mmc.fifulec.utils.PasswordCrypter;
+
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 
-public class SecurityTest {
+public class PasswordCrypterTest {
 
     @Test
     public void UU() throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        Security security = new Security();
-        security.secure("ble");
+        PasswordCrypter passwordCrypter = new PasswordCrypter();
+        passwordCrypter.crypt("ble");
     }
 }

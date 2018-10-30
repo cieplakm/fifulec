@@ -26,12 +26,13 @@ import com.mmc.fifulec.presenter.ChallengeListPresenter;
 
 public class ChallangeListActivity extends AppCompatActivity implements ChallengeListContract.View {
 
+    private ChallengeListFragment challenges4MeFragment;
+
     @BindView(R.id.fl_challenges_4_me)
     FrameLayout flChallenges4Me;
 
     @Inject
     ChallengeListPresenter presenter;
-    private ChallengeListFragment challenges4MeFragment;
 
 
     @Override
@@ -48,6 +49,8 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
                 .beginTransaction()
                 .replace(R.id.fl_challenges_4_me, challenges4MeFragment)
                 .commit();
+
+        getSupportActionBar().setTitle("Aktywne wyzwania");
 
         presenter.onCreate(this);
     }

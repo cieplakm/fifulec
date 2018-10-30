@@ -1,6 +1,6 @@
 package com.mmc.fifulec.presenter;
 
-import com.mmc.fifulec.Security;
+import com.mmc.fifulec.utils.PasswordCrypter;
 import com.mmc.fifulec.contract.LoginContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.User;
@@ -35,10 +35,10 @@ public class LoginPresenter {
     public void onCreate(final LoginContract.View view) {
         this.view = view;
 
-        String nick = preferences.getNick();
-        if (nick != null) {
+        String uuId = preferences.getUuid();
+        if (uuId != null) {
             userService
-                    .userByNick(nick)
+                    .userByUuid(uuId)
                     .subscribe(getLoginObserver());
         }
     }
@@ -59,8 +59,8 @@ public class LoginPresenter {
                 .doOnNext(new Consumer<User>() {
                     @Override
                     public void accept(User user) throws Exception {
-                        Security security = new Security();
-                        String p = security.secure(properPass);
+                        PasswordCrypter passwordCrypter = new PasswordCrypter();
+                        String p = passwordCrypter.crypt(properPass);
                         if (!user.getPassword().equalsIgnoreCase(p)){
                             throw new Exception("Błędne hasło");
                         }
@@ -79,7 +79,7 @@ public class LoginPresenter {
             @Override
             public void onNext(User user) {
                 appContext.setUser(user);
-                preferences.putNick(user.getNick());
+                preferences.putUuid(user.getUuid());
                 preferences.putPassword(user.getPassword());
                 view.openUserActivity();
             }

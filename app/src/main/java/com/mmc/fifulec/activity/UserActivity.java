@@ -20,8 +20,6 @@ import butterknife.OnClick;
 
 public class UserActivity extends AppCompatActivity implements UserContract.View {
 
-    @BindView(R.id.tv_user_nick)
-    TextView tvUserNick;
     @BindView(R.id.tv_chalanges_amount)
     TextView tvUChallengesAmount;
     @BindView(R.id.tv_gools_balance)
@@ -52,7 +50,6 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
                 presenter.onNotiSwitchChanged(buttonView.isChecked());
             }
         });
-
         presenter.onCreate(this);
 
 
@@ -71,7 +68,7 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
 
     @Override
     public void setUserNickTitle(String nick) {
-        tvUserNick.setText(nick);
+        getSupportActionBar().setTitle(nick);
     }
 
     @Override

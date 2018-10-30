@@ -48,6 +48,8 @@ public class ResolveChallengeActivity extends AppCompatActivity implements Resol
 
         Fifulec.component().inject(this);
 
+        getSupportActionBar().setTitle("Wprowadź wyniki");
+
         presenter.onCreate(this);
     }
 

@@ -3,14 +3,12 @@ package com.mmc.fifulec.presenter;
 import android.content.Context;
 import android.util.Pair;
 
-import com.mmc.fifulec.StatsMaper;
+import com.mmc.fifulec.utils.StatsMaper;
 import com.mmc.fifulec.broadcastreciver.Alarm;
 import com.mmc.fifulec.broadcastreciver.NotificationBroadcast;
 import com.mmc.fifulec.contract.UserContract;
 import com.mmc.fifulec.di.AppScope;
-import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.ChallengeScoreType;
-import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
@@ -18,11 +16,9 @@ import com.mmc.fifulec.utils.Preferences;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Predicate;
 
 @AppScope
 public class UserPresenter {

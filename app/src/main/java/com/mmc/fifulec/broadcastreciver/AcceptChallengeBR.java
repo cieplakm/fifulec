@@ -24,14 +24,9 @@ import static android.content.Context.MODE_PRIVATE;
 public class AcceptChallengeBR extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Preferences preferences = new Preferences(context.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
-
-        final String nick = preferences.getNick();
-
 
         FirebaseDatabase instance = FirebaseDatabase.getInstance();
 
-        FirebaseSecurityRepository securityRepository = new FirebaseSecurityRepository(instance);
         final FirebaseMappingRepository firebaseMappingRepository = new FirebaseMappingRepository(instance);
         final FirebaseChallengeRepository challengeRepository = new FirebaseChallengeRepository(instance);
 

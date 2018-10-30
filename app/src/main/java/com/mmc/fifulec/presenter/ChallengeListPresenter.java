@@ -11,8 +11,11 @@ import com.mmc.fifulec.model.OnChallengeClickedListener;
 import com.mmc.fifulec.model.OnChallengeConfirm;
 import com.mmc.fifulec.model.OnUserClickedListener;
 import com.mmc.fifulec.model.OpponentSelected;
+import com.mmc.fifulec.model.User;
+import com.mmc.fifulec.repository.UserRepository;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
+import com.mmc.fifulec.utils.Preferences;
 
 import java.util.List;
 
@@ -33,34 +36,22 @@ public class ChallengeListPresenter {
     private final ChallengeService challengeService;
 
     private final AppContext appContext;
+    private Preferences preferences;
+    private UserRepository userRepository;
 
-    private Observer<List<Challenge>> forUpdateObserver = new Observer<List<Challenge>>() {
-        @Override
-        public void onSubscribe(Disposable d) {
+    private Observer<List<Challenge>> forUpdateObserver;
 
-        }
 
-        @Override
-        public void onNext(List<Challenge> challenges) {
-            view.setChallenges4Me(challenges);
-        }
-
-        @Override
-        public void onError(Throwable e) {
-
-        }
-
-        @Override
-        public void onComplete() {
-
-        }
-    };
 
     @Inject
     public ChallengeListPresenter(ChallengeService challengeService,
-                                  AppContext appContext) {
+                                  AppContext appContext,
+                                  Preferences preferences,
+                                  UserRepository userRepository) {
         this.challengeService = challengeService;
         this.appContext = appContext;
+        this.preferences = preferences;
+        this.userRepository = userRepository;
     }
 
     public void onCreate(final ChallengeListContract.View view) {
@@ -73,8 +64,24 @@ public class ChallengeListPresenter {
             }
         });
 
-        challengeService.observeChallengeChanges(appContext.getUser())
-                .flatMap(new Function<String, ObservableSource<List<Challenge>>>() {
+        forUpdateObserver = new ForUpdateObserver();
+
+        Observable<String> stringObservable;
+        if (appContext.getUser() == null){
+            stringObservable = userRepository.userByUuidObservable(preferences.getUuid())
+                    .flatMap(new Function<User, ObservableSource<String>>() {
+                        @Override
+                        public ObservableSource<String> apply(User user) throws Exception {
+                            appContext.setUser(user);
+                            return challengeService.observeChallengeChanges(appContext.getUser());
+                        }
+                    });
+
+        }else{
+            stringObservable = challengeService.observeChallengeChanges(appContext.getUser());
+        }
+
+        stringObservable.flatMap(new Function<String, ObservableSource<List<Challenge>>>() {
                     @Override
                     public ObservableSource<List<Challenge>> apply(String s) throws Exception {
                         return challengeService.challengesPerUser(appContext.getUser())
@@ -198,5 +205,28 @@ public class ChallengeListPresenter {
     private void resolveChallenge(Challenge challenge) {
         appContext.setChallenge(challenge);
         view.openResolveActivity();
+    }
+
+   private class ForUpdateObserver implements Observer<List<Challenge>>{
+
+        @Override
+        public void onSubscribe(Disposable d) {
+
+        }
+
+        @Override
+        public void onNext(List<Challenge> challenges) {
+            view.setChallenges4Me(challenges);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+
+        }
+
+        @Override
+        public void onComplete() {
+
+        }
     }
 }

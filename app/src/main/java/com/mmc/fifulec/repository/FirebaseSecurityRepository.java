@@ -11,15 +11,13 @@ import com.mmc.fifulec.di.AppScope;
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 @AppScope
 public class FirebaseSecurityRepository implements SecurityRepository {
-
     private static final String UUIDS = "uuids";
+
     private FirebaseDatabase database;
 
     @Inject
@@ -29,27 +27,23 @@ public class FirebaseSecurityRepository implements SecurityRepository {
 
     @Override
     public Observable<String> uuidByNickObservable(final String nick) {
-        return Observable
-                .create(new ObservableOnSubscribe<String>() {
-                    @Override
-                    public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
-                        database.getReference().child(UUIDS).child(nick).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                String uuid = dataSnapshot.getValue(String.class);
-                                emitter.onNext(uuid);
-                                emitter.onComplete();
-                            }
+        final Subject<String> subject = PublishSubject.create();
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                emitter.onError(new Exception());
-                            }
-                        });
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread());
+        database.getReference().child(UUIDS).child(nick).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String uuid = dataSnapshot.getValue(String.class);
+                subject.onNext(uuid);
+                subject.onComplete();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                subject.onError(new Exception());
+            }
+        });
+
+        return subject;
     }
 
     @Override

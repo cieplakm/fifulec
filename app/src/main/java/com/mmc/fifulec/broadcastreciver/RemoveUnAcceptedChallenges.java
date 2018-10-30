@@ -35,12 +35,11 @@ public class RemoveUnAcceptedChallenges extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Preferences preferences = new Preferences(context.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
 
-        final String nick = preferences.getNick();
+        final String uuid = preferences.getUuid();
 
 
         FirebaseDatabase instance = FirebaseDatabase.getInstance();
 
-        FirebaseSecurityRepository securityRepository = new FirebaseSecurityRepository(instance);
         final FirebaseMappingRepository firebaseMappingRepository = new FirebaseMappingRepository(instance);
         final FirebaseChallengeRepository challengeRepository = new FirebaseChallengeRepository(instance);
 
@@ -48,14 +47,7 @@ public class RemoveUnAcceptedChallenges extends BroadcastReceiver {
         final ChallengeService challengeService = new ChallengeService(challengeRepository, challengeMappingService);
 
 
-        securityRepository.uuidByNickObservable(nick)
-                .flatMap(new Function<String, ObservableSource<ChallengeMapping>>() {
-                    @Override
-                    public ObservableSource<ChallengeMapping> apply(String uuid) throws Exception {
-                        return challengeMappingService.mapping4User(uuid);
-
-                    }
-                })
+        challengeMappingService.mapping4User(uuid)
                 .flatMap(new Function<ChallengeMapping, ObservableSource<Challenge>>() {
                     @Override
                     public ObservableSource<Challenge> apply(ChallengeMapping challengeMapping) throws Exception {
@@ -65,7 +57,7 @@ public class RemoveUnAcceptedChallenges extends BroadcastReceiver {
                 .filter(new Predicate<Challenge>() {
                     @Override
                     public boolean test(Challenge challenge) throws Exception {
-                        return challenge.getToUserNick().equalsIgnoreCase(nick);
+                        return challenge.getToUserUuid().equalsIgnoreCase(uuid);
                     }
                 })
                 .filter(new Predicate<Challenge>() {

@@ -9,12 +9,8 @@ import com.mmc.fifulec.Notification;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.ChallengeMapping;
 import com.mmc.fifulec.model.ChallengeStatus;
-import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.repository.FirebaseChallengeRepository;
 import com.mmc.fifulec.repository.FirebaseMappingRepository;
-import com.mmc.fifulec.repository.FirebaseSecurityRepository;
-import com.mmc.fifulec.repository.FirebaseUserRepository;
-import com.mmc.fifulec.repository.UserRepository;
 import com.mmc.fifulec.utils.Preferences;
 
 import java.util.List;
@@ -35,10 +31,10 @@ public class NotificationBroadcast extends BroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Preferences preferences = new Preferences(context.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
 
-        final String nick = preferences.getNick();
+        final String uuid = preferences.getUuid();
 
-        if (nick != null) {
-            unAcceptedChallengesForNick(nick)
+        if (uuid != null) {
+            unAcceptedChallengesForUuid(uuid)
                     .subscribe(new MaybeObserver<List<Challenge>>() {
                         @Override
                         public void onSubscribe(Disposable d) {
@@ -61,21 +57,13 @@ public class NotificationBroadcast extends BroadcastReceiver {
                     });
         }
     }
-    public Maybe<List<Challenge>> unAcceptedChallengesForNick(final String nick){
+    public Maybe<List<Challenge>> unAcceptedChallengesForUuid(final String uuid){
         FirebaseDatabase instance = FirebaseDatabase.getInstance();
 
-        FirebaseSecurityRepository securityRepository = new FirebaseSecurityRepository(instance);
         final FirebaseMappingRepository firebaseMappingRepository = new FirebaseMappingRepository(instance);
         final FirebaseChallengeRepository challengeRepository = new FirebaseChallengeRepository(instance);
-        final UserRepository userRepository = new FirebaseUserRepository(instance);
 
-        return securityRepository.uuidByNickObservable(nick)
-                .flatMap(new Function<String, ObservableSource<ChallengeMapping>>() {
-                    @Override
-                    public ObservableSource<ChallengeMapping> apply(String uuid) throws Exception {
-                        return firebaseMappingRepository.maping(uuid);
-                    }
-                })
+        return firebaseMappingRepository.maping(uuid)
                 .flatMap(new Function<ChallengeMapping, ObservableSource<Challenge>>() {
                     @Override
                     public ObservableSource<Challenge> apply(ChallengeMapping challengeMapping) throws Exception {
@@ -91,7 +79,7 @@ public class NotificationBroadcast extends BroadcastReceiver {
                 .filter(new Predicate<Challenge>() {
                     @Override
                     public boolean test(Challenge challenge) throws Exception {
-                        return challenge.getToUserNick().equalsIgnoreCase(nick);
+                        return challenge.getToUserUuid().equalsIgnoreCase(uuid);
                     }
                 })
                 .subscribeOn(Schedulers.io())

@@ -1,6 +1,7 @@
 package com.mmc.fifulec;
 
 import android.app.Application;
+import android.util.Log;
 
 import com.mmc.fifulec.di.DaggerMainComponent;
 import com.mmc.fifulec.di.MainComponent;
@@ -14,6 +15,7 @@ public class Fifulec extends Application {
     public void onCreate() {
         super.onCreate();
 
+        Log.e("START", "---------------->>>>>>>>>>>>>>>>>>>>>>");
         daggerMainComponent = DaggerMainComponent.builder()
                 .mainModule(new MainModule(this))
                 .build();

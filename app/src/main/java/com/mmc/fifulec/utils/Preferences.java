@@ -9,7 +9,7 @@ import com.mmc.fifulec.di.AppScope;
 @AppScope
 public class Preferences {
 
-    private static final String NICK_KEY = "com.mmc.fifulec.NICK";
+    private static final String UUID_KEY = "com.mmc.fifulec.NICK";
     private static final String NOTIFICATION_ACTIVE = "com.mmc.fifulec.NOTIFICATIONS";
 
     private final SharedPreferences sharedPreferences;
@@ -25,19 +25,19 @@ public class Preferences {
 
     }
 
-    public void putNick(String nick){
-        sharedPreferencesEditor.putString(NICK_KEY, nick).apply();
-    }
-
-    public String getNick(){
-        return sharedPreferences.getString(NICK_KEY, null);
-    }
-
     public void putNotificationActive(boolean isOn) {
         sharedPreferencesEditor.putBoolean(NOTIFICATION_ACTIVE, isOn).apply();
     }
 
     public boolean isNotificationActive(){
         return sharedPreferences.getBoolean(NOTIFICATION_ACTIVE, false);
+    }
+
+    public String getUuid(){
+        return sharedPreferences.getString(UUID_KEY, null);
+    }
+
+    public void putUuid(String uuid){
+        sharedPreferencesEditor.putString(UUID_KEY, uuid).apply();
     }
 }
