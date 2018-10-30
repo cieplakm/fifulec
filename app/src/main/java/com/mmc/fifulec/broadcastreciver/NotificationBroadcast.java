@@ -94,7 +94,6 @@ public class NotificationBroadcast extends BroadcastReceiver {
                         return challenge.getToUserNick().equalsIgnoreCase(nick);
                     }
                 })
-
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .toList()

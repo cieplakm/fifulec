@@ -21,4 +21,5 @@ public class AppContext {
     private Challenge challenge;
     private OnUserClickedListener onUserClickedListener;
     private OnChallengeClickedListener onChallengeClickedListener;
+
 }

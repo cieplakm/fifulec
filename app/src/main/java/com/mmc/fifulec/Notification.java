@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
+import com.mmc.fifulec.activity.ChallangeListActivity;
 import com.mmc.fifulec.broadcastreciver.AcceptChallengeBR;
 import com.mmc.fifulec.model.Challenge;
 
@@ -63,13 +64,18 @@ public class Notification {
         PendingIntent paccept = PendingIntent.getBroadcast(context, 123, accept, FLAG_UPDATE_CURRENT);
         PendingIntent preject = PendingIntent.getBroadcast(context, 124, reject, FLAG_UPDATE_CURRENT);
 
+
+        Intent openIntent = new Intent(context, ChallangeListActivity.class);
+        PendingIntent openChallengeList = PendingIntent.getActivity(context, 125, openIntent, FLAG_UPDATE_CURRENT);
+
         builder
                 .setSmallIcon(R.drawable.circle_gray)
                 .setAutoCancel(true)
                 .setContentTitle("Nowy Challenge!")
                 .setContentText("Od " + stringBuilder.toString())
                 .addAction(R.drawable.common_google_signin_btn_icon_dark, "Zaakceptuj", paccept)
-                .addAction(R.drawable.common_google_signin_btn_icon_dark, "Odrzuć", preject);
+                .addAction(R.drawable.common_google_signin_btn_icon_dark, "Odrzuć", preject)
+                .setContentIntent(openChallengeList);
 
         manager.notify(22123, builder.build());
 

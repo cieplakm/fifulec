@@ -7,11 +7,13 @@ import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.model.Score;
 import com.mmc.fifulec.model.Scores;
 import com.mmc.fifulec.model.User;
+import com.mmc.fifulec.presenter.ChallengeHelper;
 import com.mmc.fifulec.repository.ChallengeRepository;
 import com.mmc.fifulec.repository.UserRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -109,6 +111,18 @@ public class ChallengeService {
                     @Override
                     public ObservableSource<Challenge> apply(ChallengeMapping challengeMapping) throws Exception {
                         return challengeRepository.getChallenge(challengeMapping.getChallengeUuid());
+                    }
+                })
+                .sorted(new Comparator<Challenge>() {
+                    @Override
+                    public int compare(Challenge o1, Challenge o2) {
+                        int x = ChallengeHelper.getChallengeStatusWeight(o1);
+                        int y = ChallengeHelper.getChallengeStatusWeight(o2);
+                        if (x != y) {
+                            return Integer.compare(x, y);
+                        } else {
+                            return Long.compare(o1.getTimestamp(), o2.getTimestamp());
+                        }
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())

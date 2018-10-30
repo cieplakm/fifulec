@@ -10,8 +10,6 @@ public interface ChallengeListContract {
     interface View {
         void setChallenges4Me(List<Challenge> challenges);
 
-        void setChallenges4They(List<Challenge> challenges);
-
         void showUsersList();
 
         void setOnChallengeClickListener4Adapter(OnChallengeClickedListener onChallengeClickListener4Adapter);

@@ -2,7 +2,6 @@ package com.mmc.fifulec.activity;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -53,12 +52,6 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
         presenter.onCreate(this);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        presenter.onResume();
-    }
-
     @OnClick(R.id.btn_add_challange)
     public void onAddChallengeClicked(){
         presenter.onAddChallengeClicked();
@@ -67,11 +60,6 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
     @Override
     public void setChallenges4Me(List<Challenge> challenges) {
         challenges4MeFragment.setChallenges4Adapter(challenges);
-    }
-
-    @Override
-    public void setChallenges4They(List<Challenge> challenges) {
-
     }
 
     @Override
@@ -92,7 +80,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        presenter.onChallengeAccepted(challenge);
+                        presenter.onAcceptedClicked(challenge);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -152,7 +140,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        presenter.onChallengeCancel(challenge);
+                        presenter.onCancelClicked(challenge);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
@@ -167,9 +155,4 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
                 .setNegativeButton("Nie", dialogClickListener).show();
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        presenter.onPause();
-    }
 }
