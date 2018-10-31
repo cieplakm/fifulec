@@ -179,4 +179,7 @@ public class ChallengeService {
                 .subscribeOn(Schedulers.io());
     }
 
+    public Observable<Challenge> challengePerUuid(String challengeId) {
+        return challengeRepository.getChallenge(challengeId);
+    }
 }

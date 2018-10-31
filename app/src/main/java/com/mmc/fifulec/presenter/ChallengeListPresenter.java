@@ -18,13 +18,17 @@ import com.mmc.fifulec.utils.AppContext;
 import com.mmc.fifulec.utils.Preferences;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Single;
 import io.reactivex.SingleObserver;
+import io.reactivex.SingleSource;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
@@ -40,7 +44,6 @@ public class ChallengeListPresenter {
     private UserRepository userRepository;
 
     private Observer<List<Challenge>> forUpdateObserver;
-
 
 
     @Inject
@@ -66,37 +69,45 @@ public class ChallengeListPresenter {
 
         forUpdateObserver = new ForUpdateObserver();
 
-        Observable<String> stringObservable;
-        if (appContext.getUser() == null){
-            stringObservable = userRepository.userByUuidObservable(preferences.getUuid())
-                    .flatMap(new Function<User, ObservableSource<String>>() {
-                        @Override
-                        public ObservableSource<String> apply(User user) throws Exception {
-                            appContext.setUser(user);
-                            return challengeService.observeChallengeChanges(appContext.getUser());
-                        }
-                    });
-
-        }else{
-            stringObservable = challengeService.observeChallengeChanges(appContext.getUser());
-        }
-
-        stringObservable.flatMap(new Function<String, ObservableSource<List<Challenge>>>() {
+        Observable.just(appContext.getUser() != null)
+                .flatMap(new Function<Boolean, ObservableSource<User>>() {
                     @Override
-                    public ObservableSource<List<Challenge>> apply(String s) throws Exception {
-                        return challengeService.challengesPerUser(appContext.getUser())
+                    public ObservableSource<User> apply(Boolean isUserInAppContext) {
+                        if (isUserInAppContext) {
+                            return Observable.just(appContext.getUser());
+                        } else {
+                            return userRepository.userByUuidObservable(preferences.getUuid());
+                        }
+                    }
+                })
+                .flatMap(new Function<User, ObservableSource<String>>() {
+                    @Override
+                    public ObservableSource<String> apply(User user) {
+                        return challengeService.observeChallengeChanges(user);
+                    }
+                })
+                .flatMap(new Function<String, ObservableSource<Challenge>>() {
+                    @Override
+                    public ObservableSource<Challenge> apply(String challengeId) {
+                        return challengeService.challengePerUuid(challengeId)
                                 .filter(new Predicate<Challenge>() {
                                     @Override
-                                    public boolean test(Challenge challenge) throws Exception {
+                                    public boolean test(Challenge challenge) {
                                         ChallengeStatus challengeStatus = challenge.getChallengeStatus();
                                         return challengeStatus != ChallengeStatus.FINISHED &&
                                                 challengeStatus != ChallengeStatus.REJECTED;
                                     }
-                                })
-                                .toList()
-                                .toObservable();
+                                });
                     }
                 })
+                .map(new Function<Challenge, Challenge>() {
+                    @Override
+                    public Challenge apply(Challenge challenge) throws Exception {
+                        return challenge;
+                    }
+                })
+                .toList()
+                .toObservable()
                 .subscribe(forUpdateObserver);
     }
 
@@ -135,7 +146,7 @@ public class ChallengeListPresenter {
 
     public void onAcceptedClicked(Challenge challenge) {
         challengeService.acceptChallenge(challenge);
-        new Notification((Context)view).cancel();
+        new Notification((Context) view).cancel();
     }
 
     public void onRejectClicked(Challenge challenge) {
@@ -156,7 +167,7 @@ public class ChallengeListPresenter {
             case NOT_ACCEPTED:
                 if (appContext.getUser().getUuid().equals(challenge.getToUserUuid())) {
                     showQuestionAboutAcceptance(challenge);
-                }else {
+                } else {
                     showQuestionCancelAcceptance(challenge);
                 }
                 break;
@@ -207,7 +218,7 @@ public class ChallengeListPresenter {
         view.openResolveActivity();
     }
 
-   private class ForUpdateObserver implements Observer<List<Challenge>>{
+    private class ForUpdateObserver implements Observer<List<Challenge>> {
 
         @Override
         public void onSubscribe(Disposable d) {
