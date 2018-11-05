@@ -1,8 +1,11 @@
 package com.mmc.fifulec.presenter;
 
+import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Pair;
 
+import com.mmc.fifulec.MyIntentService;
 import com.mmc.fifulec.utils.StatsMaper;
 import com.mmc.fifulec.broadcastreciver.Alarm;
 import com.mmc.fifulec.broadcastreciver.NotificationBroadcast;
@@ -19,6 +22,8 @@ import javax.inject.Inject;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
+
+import static android.content.Context.ACTIVITY_SERVICE;
 
 @AppScope
 public class UserPresenter {
@@ -130,6 +135,23 @@ public class UserPresenter {
     public void onNotiSwitchChanged(boolean isChecked) {
         preferences.putNotificationActive(isChecked);
         switchNotificationAlarm(isChecked);
+        Context view = (Context) this.view;
+
+        if (isChecked){
+            if (!isServiceRunning(view)){
+                view.startService(new Intent(view, MyIntentService.class));
+            }
+        }
+    }
+
+    private boolean isServiceRunning(Context view) {
+        ActivityManager manager = (ActivityManager) view.getSystemService(ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if ("com.mmc.fifulec.MyIntentService".equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private void switchNotificationAlarm(boolean isChecked) {

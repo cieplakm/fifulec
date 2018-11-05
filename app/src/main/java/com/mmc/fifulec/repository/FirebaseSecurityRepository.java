@@ -33,6 +33,7 @@ public class FirebaseSecurityRepository implements SecurityRepository {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String uuid = dataSnapshot.getValue(String.class);
+                if (uuid == null) subject.onError(new RuntimeException("No user"));
                 subject.onNext(uuid);
                 subject.onComplete();
             }
