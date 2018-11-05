@@ -155,7 +155,7 @@ public class ChallengeService {
                     @Override
                     public boolean test(Challenge challenge) throws Exception {
                         return challenge.getChallengeStatus() != ChallengeStatus.FINISHED
-                                || challenge.getChallengeStatus() != ChallengeStatus.REJECTED;
+                                && challenge.getChallengeStatus() != ChallengeStatus.REJECTED;
                     }
                 })
                 .map(new Function<Challenge, String>() {

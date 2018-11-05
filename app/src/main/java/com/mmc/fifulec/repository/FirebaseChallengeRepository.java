@@ -63,11 +63,11 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
     @Override
     public Observable<String> observeChallengeChanges(String challengeId) {
         Subject<String> subject = PublishSubject.create();
-        challengesReference.child(challengeId).addChildEventListener(mappingAddedListener(challengeId, subject));
+        challengesReference.child(challengeId).addChildEventListener(changeChallengeListener(challengeId, subject));
         return subject;
     }
 
-    private ChildEventListener mappingAddedListener(final String challengeId, final Subject<String> subject) {
+    private ChildEventListener changeChallengeListener(final String challengeId, final Subject<String> subject) {
         return new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {

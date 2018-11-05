@@ -17,6 +17,8 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.subjects.PublishSubject;
+import io.reactivex.subjects.Subject;
 
 public class FirebaseMappingRepository implements ChallengeMappingRepository {
 
@@ -44,40 +46,9 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
 
     @Override
     public Observable<String> observeChanges(final String userUuid) {
-       return Observable.create(new ObservableOnSubscribe<String>() {
-           @Override
-           public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
-               challengesReference.child(userUuid)
-                       .addChildEventListener(new ChildEventListener() {
-                           @Override
-                           public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                               ChallengeMapping value = dataSnapshot.getValue(ChallengeMapping.class);
-                               emitter.onNext(value.getChallengeUuid());
-                           }
-
-                           @Override
-                           public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                           }
-
-                           @Override
-                           public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                           }
-
-                           @Override
-                           public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                           }
-
-                           @Override
-                           public void onCancelled(@NonNull DatabaseError databaseError) {
-                               emitter.onError(new Exception());
-                           }
-                       });
-           }
-       });
-
+        final Subject<String> subject = PublishSubject.create();
+        challengesReference.child(userUuid).addChildEventListener(new MappingChangeListener(subject));
+        return subject;
     }
 
     private void delete(String challengeUuid, String userUuid){
@@ -126,4 +97,39 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
             }
         });
     }
+
+    class MappingChangeListener implements ChildEventListener {
+        private Subject<String> subject;
+
+        public MappingChangeListener(Subject<String> subject) {
+            this.subject = subject;
+        }
+
+        @Override
+        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            ChallengeMapping value = dataSnapshot.getValue(ChallengeMapping.class);
+            subject.onNext(value.getChallengeUuid());
+        }
+
+        @Override
+        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            subject.onError(new Exception());
+        }
+    }
+
 }
