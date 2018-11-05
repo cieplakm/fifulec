@@ -1,4 +1,4 @@
-package com.mmc.fifulec;
+package com.mmc.fifulec.broadcastreciver;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

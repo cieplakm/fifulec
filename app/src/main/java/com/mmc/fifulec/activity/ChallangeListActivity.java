@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import com.mmc.fifulec.ChallengeListFragment;
+import com.mmc.fifulec.fragment.ChallengeListFragment;
 import com.mmc.fifulec.contract.ChallengeListContract;
 import com.mmc.fifulec.Fifulec;
 import com.mmc.fifulec.R;

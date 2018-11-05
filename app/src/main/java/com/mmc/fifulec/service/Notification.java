@@ -1,4 +1,4 @@
-package com.mmc.fifulec;
+package com.mmc.fifulec.service;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
+import com.mmc.fifulec.R;
 import com.mmc.fifulec.activity.ChallangeListActivity;
 import com.mmc.fifulec.broadcastreciver.AcceptChallengeBR;
 import com.mmc.fifulec.model.Challenge;

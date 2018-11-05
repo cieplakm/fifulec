@@ -5,15 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.firebase.database.FirebaseDatabase;
-import com.mmc.fifulec.Notification;
+import com.mmc.fifulec.service.Notification;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.ChallengeMapping;
 import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.repository.FirebaseChallengeRepository;
 import com.mmc.fifulec.repository.FirebaseMappingRepository;
-import com.mmc.fifulec.repository.FirebaseSecurityRepository;
-import com.mmc.fifulec.repository.FirebaseUserRepository;
-import com.mmc.fifulec.repository.UserRepository;
 import com.mmc.fifulec.service.ChallengeMappingService;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.Preferences;

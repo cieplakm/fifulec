@@ -2,7 +2,7 @@ package com.mmc.fifulec.presenter;
 
 import android.content.Context;
 import android.util.Log;
-import com.mmc.fifulec.Notification;
+import com.mmc.fifulec.service.Notification;
 import com.mmc.fifulec.contract.ChallengeListContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.Challenge;

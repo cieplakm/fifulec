@@ -1,4 +1,4 @@
-package com.mmc.fifulec;
+package com.mmc.fifulec.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +12,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import com.mmc.fifulec.R;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.OnChallengeClickedListener;
 import com.mmc.fifulec.view.ChallengeAdapter;
@@ -50,7 +51,6 @@ public class ChallengeListFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-
     }
 
 
