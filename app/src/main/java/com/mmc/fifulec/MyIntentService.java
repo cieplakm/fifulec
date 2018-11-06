@@ -11,6 +11,7 @@ import com.mmc.fifulec.repository.FirebaseMappingRepository;
 import com.mmc.fifulec.repository.FirebaseUserRepository;
 import com.mmc.fifulec.service.ChallengeMappingService;
 import com.mmc.fifulec.service.ChallengeService;
+import com.mmc.fifulec.service.FifulecNotification;
 import com.mmc.fifulec.utils.Preferences;
 
 import io.reactivex.Observable;
@@ -36,7 +37,7 @@ public class MyIntentService extends IntentService {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e("RRRRRRr", "START");
+
         FirebaseDatabase instance = FirebaseDatabase.getInstance();
         userRepository = new FirebaseUserRepository(instance);
         preferences = new Preferences(this.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
@@ -72,8 +73,8 @@ public class MyIntentService extends IntentService {
 
                 @Override
                 public void onNext(String s) {
-                    Log.e("EEEEEEEEEEEE", "OOOPOP");
-
+                    FifulecNotification fifulecNotification = new FifulecNotification(MyIntentService.this);
+                    fifulecNotification.showChallengeChanged("KTOŚ");
                 }
 
                 @Override

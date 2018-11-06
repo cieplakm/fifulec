@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.firebase.database.FirebaseDatabase;
-import com.mmc.fifulec.service.Notification;
+import com.mmc.fifulec.service.FifulecNotification;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.repository.FirebaseChallengeRepository;
 import com.mmc.fifulec.repository.FirebaseMappingRepository;
@@ -43,7 +43,7 @@ public class AcceptChallengeBR extends BroadcastReceiver {
                     @Override
                     public void onNext(Challenge challenge) {
                         challengeService.rejectChallenge(challenge);
-                        new Notification(context).cancel();
+                        new FifulecNotification(context).cancel();
                     }
 
                     @Override
@@ -68,7 +68,7 @@ public class AcceptChallengeBR extends BroadcastReceiver {
                     @Override
                     public void onNext(Challenge challenge) {
                         challengeService.acceptChallenge(challenge);
-                        new Notification(context).cancel();
+                        new FifulecNotification(context).cancel();
                     }
 
                     @Override

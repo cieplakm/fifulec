@@ -2,7 +2,7 @@ package com.mmc.fifulec.presenter;
 
 import android.content.Context;
 import android.util.Log;
-import com.mmc.fifulec.service.Notification;
+import com.mmc.fifulec.service.FifulecNotification;
 import com.mmc.fifulec.contract.ChallengeListContract;
 import com.mmc.fifulec.di.AppScope;
 import com.mmc.fifulec.model.Challenge;
@@ -147,7 +147,7 @@ public class ChallengeListPresenter {
 
     public void onAcceptedClicked(Challenge challenge) {
         challengeService.acceptChallenge(challenge);
-        new Notification((Context) view).cancel();
+        new FifulecNotification((Context) view).cancel();
     }
 
     public void onRejectClicked(Challenge challenge) {
