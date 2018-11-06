@@ -22,4 +22,5 @@ public class Challenge {
     private List<Scores> scores;
     private long timestamp;
     private boolean twoLeggedTie;
+    private String lastChangedById;
 }

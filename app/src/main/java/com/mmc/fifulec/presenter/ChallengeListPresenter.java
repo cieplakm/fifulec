@@ -98,7 +98,7 @@ public class ChallengeListPresenter {
                 .flatMap(new Function<User, ObservableSource<String>>() {
                     @Override
                     public ObservableSource<String> apply(User user) throws Exception {
-                        return challengeService.observeChallengeChanges(user);
+                        return challengeService.observeChallengeChangesOrAdded(user);
                     }
                 })
                 .flatMap(new Function<String, ObservableSource<List<Challenge>>>() {
@@ -146,7 +146,7 @@ public class ChallengeListPresenter {
     }
 
     public void onAcceptedClicked(Challenge challenge) {
-        challengeService.acceptChallenge(challenge);
+        challengeService.acceptChallenge(challenge, appContext.getUser());
         new FifulecNotification((Context) view).cancel();
     }
 
@@ -193,14 +193,14 @@ public class ChallengeListPresenter {
     }
 
     private void rejectChallenge(Challenge challenge) {
-        challengeService.rejectChallenge(challenge);
+        challengeService.rejectChallenge(challenge, appContext.getUser());
     }
 
     private void confirm(final Challenge challenge) {
         view.showConfirmDialog(new OnChallengeConfirm() {
             @Override
             public void confirm() {
-                challengeService.confirmChallenge(challenge);
+                challengeService.confirmChallenge(challenge, appContext.getUser());
             }
 
             @Override

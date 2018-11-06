@@ -35,7 +35,7 @@
         <receiver android:name=".broadcastreciver.AcceptChallengeBR" />
 
         <service
-            android:name=".MyIntentService"
+            android:name=".NotificationService"
             android:exported="false"></service>
     </application>
 

@@ -54,6 +54,7 @@ public class ChallengeService {
                 .challengeStatus(ChallengeStatus.NOT_ACCEPTED)
                 .timestamp(System.currentTimeMillis())
                 .twoLeggedTie(isTwoLeggedTie)
+                .lastChangedById(user.getUuid())
                 .build();
         challengeRepository.createChallenge(challenge);
         challengeMappingService.create(challenge);
@@ -66,17 +67,19 @@ public class ChallengeService {
         challengeMappingService.delete(challenge);
     }
 
-    public void acceptChallenge(Challenge challenge) {
+    public void acceptChallenge(Challenge challenge, User user) {
         challenge.setChallengeStatus(ChallengeStatus.ACCEPTED);
+        challenge.setLastChangedById(user.getUuid());
         challengeRepository.updateChallenge(challenge);
     }
 
-    public void rejectChallenge(Challenge challenge) {
+    public void rejectChallenge(Challenge challenge, User user) {
         challenge.setChallengeStatus(ChallengeStatus.REJECTED);
+        challenge.setLastChangedById(user.getUuid());
         challengeRepository.updateChallenge(challenge);
     }
 
-    public void resolveChallenge(Challenge challenge, int fromScore, int toScore, int fromRew, int toRew) {
+    public void resolveChallenge(Challenge challenge, User user, int fromScore, int toScore, int fromRew, int toRew) {
         Scores scores = Scores.builder()
                 .from(new Score(challenge.getFromUserUuid(), fromScore))
                 .to(new Score(challenge.getToUserUuid(), toScore))
@@ -97,11 +100,13 @@ public class ChallengeService {
 
         challenge.setScores(scoresList);
         challenge.setChallengeStatus(ChallengeStatus.NOT_CONFIRMED);
+        challenge.setLastChangedById(user.getUuid());
         challengeRepository.updateChallenge(challenge);
     }
 
-    public void confirmChallenge(Challenge challenge) {
+    public void confirmChallenge(Challenge challenge, User user) {
         challenge.setChallengeStatus(ChallengeStatus.FINISHED);
+        challenge.setLastChangedById(user.getUuid());
         challengeRepository.updateChallenge(challenge);
     }
 
@@ -148,9 +153,8 @@ public class ChallengeService {
                 .subscribeOn(Schedulers.io());
     }
 
-    public Observable<String> observeChallengeChanges(User user) {
-
-        Observable<String> currChanged = challengesPerUser(user)
+    public Observable<String> observeChallengeChanges(User user){
+        return challengesPerUser(user)
                 .filter(new Predicate<Challenge>() {
                     @Override
                     public boolean test(Challenge challenge) throws Exception {
@@ -158,16 +162,19 @@ public class ChallengeService {
                                 && challenge.getChallengeStatus() != ChallengeStatus.REJECTED;
                     }
                 })
-                .map(new Function<Challenge, String>() {
+                .flatMap(new Function<Challenge, ObservableSource<String>>() {
                     @Override
-                    public String apply(Challenge challenge) throws Exception {
-                        return challenge.getUuid();
+                    public ObservableSource<String> apply(Challenge challenge) throws Exception {
+                        return challengeRepository.observeChallengeChanges(challenge.getUuid());
                     }
                 });
 
+    }
+
+    public Observable<String> observeChallengeChangesOrAdded(User user) {
         Observable<String> challAdded = challengeMappingService.observeMappingChanges(user.getUuid());
 
-        return challAdded.mergeWith(currChanged)
+        return challAdded
                 .flatMap(new Function<String, ObservableSource<String>>() {
                     @Override
                     public ObservableSource<String> apply(String s) throws Exception {
@@ -175,6 +182,14 @@ public class ChallengeService {
                     }
                 })
                 .mergeWith(challAdded)
+                .mergeWith(observeChallengeChanges(user))
+
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(String s) throws Exception {
+                        return s;
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io());
     }

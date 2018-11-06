@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.google.firebase.database.FirebaseDatabase;
+import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.service.FifulecNotification;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.repository.FirebaseChallengeRepository;
@@ -31,6 +32,7 @@ public class AcceptChallengeBR extends BroadcastReceiver {
         if (intent.hasExtra("CHALLENGE")){
             int command = intent.getExtras().getInt("CHALLENGE");
             String id = intent.getExtras().getString("CHALLENGE_ID");
+            final String userId = intent.getExtras().getString("USER_ID");
             if (command==0){
                 //reject
                 Observable<Challenge> challenge = challengeRepository.getChallenge(id);
@@ -42,7 +44,9 @@ public class AcceptChallengeBR extends BroadcastReceiver {
 
                     @Override
                     public void onNext(Challenge challenge) {
-                        challengeService.rejectChallenge(challenge);
+                        User user = new User();
+                        user.setUuid(userId);
+                        challengeService.rejectChallenge(challenge, user);
                         new FifulecNotification(context).cancel();
                     }
 
@@ -67,7 +71,9 @@ public class AcceptChallengeBR extends BroadcastReceiver {
 
                     @Override
                     public void onNext(Challenge challenge) {
-                        challengeService.acceptChallenge(challenge);
+                        User user = new User();
+                        user.setUuid(userId);
+                        challengeService.acceptChallenge(challenge, user);
                         new FifulecNotification(context).cancel();
                     }
 

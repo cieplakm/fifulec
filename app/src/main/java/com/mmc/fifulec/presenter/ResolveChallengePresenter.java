@@ -88,7 +88,7 @@ public class ResolveChallengePresenter {
             scoreToRew = Integer.parseInt(toRew);
         }
 
-        challengeService.resolveChallenge(challenge, scoreFrom, scoreTo, scoreFromRew, scoreToRew);
+        challengeService.resolveChallenge(challenge,appContext.getUser(), scoreFrom, scoreTo, scoreFromRew, scoreToRew);
 
         view.finish();
     }

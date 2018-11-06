@@ -58,12 +58,12 @@ public class FifulecNotification {
         manager.notify(22123, builder.build());
     }
 
-    public void showChallengeChanged(String who){
+    public void showChallengeChanged(String msg){
         Intent openIntent = new Intent(context, ChallangeListActivity.class);
 
         NotificationBuilder builder = new NotificationBuilder();
         builder.title("Nowa akcja!");
-        builder.message(who +" wykonał akcję");
+        builder.message(msg);
 
         builder.clickAction(openIntent, 1624);
 

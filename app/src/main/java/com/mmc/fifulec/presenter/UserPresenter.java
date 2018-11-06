@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
 
-import com.mmc.fifulec.MyIntentService;
+import com.mmc.fifulec.NotificationService;
 import com.mmc.fifulec.utils.StatsMaper;
 import com.mmc.fifulec.broadcastreciver.Alarm;
 import com.mmc.fifulec.broadcastreciver.NotificationBroadcast;
@@ -139,7 +139,7 @@ public class UserPresenter {
 
         if (isChecked){
             if (!isServiceRunning(view)){
-                view.startService(new Intent(view, MyIntentService.class));
+                view.startService(new Intent(view, NotificationService.class));
             }
         }
     }
@@ -147,7 +147,7 @@ public class UserPresenter {
     private boolean isServiceRunning(Context view) {
         ActivityManager manager = (ActivityManager) view.getSystemService(ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if ("com.mmc.fifulec.MyIntentService".equals(service.service.getClassName())) {
+            if ("com.mmc.fifulec.NotificationService".equals(service.service.getClassName())) {
                 return true;
             }
         }
