@@ -29,33 +29,33 @@ import static android.content.Context.MODE_PRIVATE;
 public class NotificationBroadcast extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Preferences preferences = new Preferences(context.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
-
-        final String uuid = preferences.getUuid();
-
-        if (uuid != null) {
-            unAcceptedChallengesForUuid(uuid)
-                    .subscribe(new MaybeObserver<List<Challenge>>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
-
-                        }
-
-                        @Override
-                        public void onSuccess(List<Challenge> challenges) {
-                            FifulecNotification fifulecNotification = new FifulecNotification(context);
-                            fifulecNotification.showNewChallengeNotification(challenges);
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                        }
-
-                        @Override
-                        public void onComplete() {
-                        }
-                    });
-        }
+//        Preferences preferences = new Preferences(context.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
+//
+//        final String uuid = preferences.getUuid();
+//
+//        if (uuid != null) {
+//            unAcceptedChallengesForUuid(uuid)
+//                    .subscribe(new MaybeObserver<List<Challenge>>() {
+//                        @Override
+//                        public void onSubscribe(Disposable d) {
+//
+//                        }
+//
+//                        @Override
+//                        public void onSuccess(List<Challenge> challenges) {
+//                            FifulecNotification fifulecNotification = new FifulecNotification(context);
+//                            fifulecNotification.showNewChallengeNotification(challenges);
+//                        }
+//
+//                        @Override
+//                        public void onError(Throwable e) {
+//                        }
+//
+//                        @Override
+//                        public void onComplete() {
+//                        }
+//                    });
+//        }
     }
     public Maybe<List<Challenge>> unAcceptedChallengesForUuid(final String uuid){
         FirebaseDatabase instance = FirebaseDatabase.getInstance();

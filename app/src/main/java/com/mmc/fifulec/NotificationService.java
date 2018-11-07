@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.mmc.fifulec.model.Challenge;
+import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.repository.FirebaseChallengeRepository;
 import com.mmc.fifulec.repository.FirebaseMappingRepository;
@@ -21,6 +22,8 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+
+import java.util.Collections;
 
 public class NotificationService extends IntentService {
 
@@ -96,7 +99,11 @@ public class NotificationService extends IntentService {
             public void onNext(Challenge s) {
                 if (preferences.isNotificationActive()) {
                     FifulecNotification fifulecNotification = new FifulecNotification(NotificationService.this);
-                    fifulecNotification.showChallengeChanged(getMessage(s));
+                    if(s.getChallengeStatus()== ChallengeStatus.NOT_ACCEPTED){
+                        fifulecNotification.showNewChallengeNotification(Collections.singletonList(s));
+                    }else{
+                        fifulecNotification.showChallengeChanged(getMessage(s));
+                    }
                     Log.e("SERVICY", "Challenge");
                 }
             }

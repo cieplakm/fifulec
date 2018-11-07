@@ -108,7 +108,7 @@ public class ChallengeListPresenter {
                     }
                 });
 
-        challengeList.subscribe(forUpdateObserver);
+        //challengeList.subscribe(forUpdateObserver);
         updatedList.subscribe(forUpdateObserver);
     }
 

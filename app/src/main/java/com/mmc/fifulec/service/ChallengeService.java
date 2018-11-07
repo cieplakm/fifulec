@@ -9,7 +9,6 @@ import com.mmc.fifulec.model.Scores;
 import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.presenter.ChallengeHelper;
 import com.mmc.fifulec.repository.ChallengeRepository;
-import com.mmc.fifulec.repository.UserRepository;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,9 +20,7 @@ import javax.inject.Inject;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
@@ -70,6 +67,7 @@ public class ChallengeService {
     public void acceptChallenge(Challenge challenge, User user) {
         challenge.setChallengeStatus(ChallengeStatus.ACCEPTED);
         challenge.setLastChangedById(user.getUuid());
+        challengeMappingService.markAsOldForChallenge(challenge.getFromUserUuid(), challenge.getToUserUuid(), challenge.getUuid());
         challengeRepository.updateChallenge(challenge);
     }
 
@@ -183,7 +181,6 @@ public class ChallengeService {
                 })
                 .mergeWith(challAdded)
                 .mergeWith(observeChallengeChanges(user))
-
                 .map(new Function<String, String>() {
                     @Override
                     public String apply(String s) throws Exception {

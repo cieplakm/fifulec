@@ -9,7 +9,11 @@ public interface ChallengeMappingRepository {
 
     Observable<ChallengeMapping> maping(String userUuid);
 
+    Observable<ChallengeMapping> challengeMapiingObservable(String userId, String challengeId);
+
     void delete(String challengeUuid, String fromUserUuid, String toUserUuid);
 
     Observable<String> observeChanges(String userUuid);
+
+    void update(String userUuid, ChallengeMapping mapping);
 }

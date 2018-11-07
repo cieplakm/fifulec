@@ -14,6 +14,7 @@ import com.mmc.fifulec.model.ChallengeMapping;
 
 import javax.inject.Inject;
 
+import com.mmc.fifulec.model.ChallengeMappingStatus;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -36,6 +37,38 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
                 .child(userUuid)
                 .child(mapping.getUuid())
                 .setValue(mapping);
+    }
+
+    @Override
+    public void update(String userId, ChallengeMapping mapping) {
+        challengesReference
+                .child(userId)
+                .child(mapping.getUuid())
+                .setValue(mapping);
+    }
+
+    @Override
+    public Observable<ChallengeMapping> challengeMapiingObservable(String userId, String challengeId) {
+        final Subject<ChallengeMapping> subject = PublishSubject.create();
+
+        challengesReference.child(userId).orderByChild("challengeUuid").equalTo(challengeId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot child : dataSnapshot.getChildren()) {
+                    ChallengeMapping value = child.getValue(ChallengeMapping.class);
+                    value.setStatus(ChallengeMappingStatus.OLD);
+                    subject.onNext(value);
+                    subject.onComplete();
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        return subject;
     }
 
     @Override
@@ -108,7 +141,9 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
         @Override
         public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
             ChallengeMapping value = dataSnapshot.getValue(ChallengeMapping.class);
-            subject.onNext(value.getChallengeUuid());
+            if (value != null && value.getStatus() != null && value.getStatus() != ChallengeMappingStatus.OLD){
+                subject.onNext(value.getChallengeUuid());
+            }
         }
 
         @Override

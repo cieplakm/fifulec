@@ -14,4 +14,5 @@ public class ChallengeMapping {
     private String fromUuid;
     private String toUuid;
     private String challengeUuid;
+    private ChallengeMappingStatus status;
 }
