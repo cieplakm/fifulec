@@ -1,6 +1,8 @@
 package com.mmc.fifulec;
 
 import android.app.IntentService;
+import android.app.job.JobParameters;
+import android.app.job.JobService;
 import android.content.Intent;
 import android.util.Log;
 
@@ -25,7 +27,7 @@ import io.reactivex.functions.Predicate;
 
 import java.util.Collections;
 
-public class NotificationService extends IntentService {
+public class NotificationService extends JobService {
 
     private FirebaseUserRepository userRepository;
     private ChallengeService challengeService;
@@ -33,16 +35,10 @@ public class NotificationService extends IntentService {
     private User user;
 
     public NotificationService() {
-        super("NotificationService");
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public boolean onStartJob(JobParameters params) {
         Log.e("SERVICY", "onStartCommand");
         FirebaseDatabase instance = FirebaseDatabase.getInstance();
         userRepository = new FirebaseUserRepository(instance);
@@ -119,8 +115,16 @@ public class NotificationService extends IntentService {
             }
         });
 
-        return START_STICKY;
+
+        return false;
     }
+
+    @Override
+    public boolean onStopJob(JobParameters params) {
+        return false;
+    }
+
+
 
     private String getMessage(Challenge challenge) {
         String becouseOf;

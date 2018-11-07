@@ -1,8 +1,12 @@
 package com.mmc.fifulec.presenter;
 
 import android.app.ActivityManager;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.util.Pair;
 
 import com.mmc.fifulec.NotificationService;
@@ -24,6 +28,7 @@ import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
 
 import static android.content.Context.ACTIVITY_SERVICE;
+import static android.content.Context.JOB_SCHEDULER_SERVICE;
 
 @AppScope
 public class UserPresenter {
@@ -137,6 +142,25 @@ public class UserPresenter {
         switchNotificationAlarm(isChecked);
         Context view = (Context) this.view;
 
+
+        Log.e("SERVICY", "BROADCAST");
+
+        ComponentName componentName = new ComponentName(view, NotificationService.class);
+        JobInfo jobInfo = new JobInfo.Builder(12, componentName)
+                .setRequiresCharging(true)
+                . setPeriodic(1000)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .build();
+
+        JobScheduler jobScheduler = (JobScheduler)view.getSystemService(JOB_SCHEDULER_SERVICE);
+        int resultCode = jobScheduler.schedule(jobInfo);
+        if (resultCode == JobScheduler.RESULT_SUCCESS) {
+            Log.d("SERVICY", "Job scheduled!");
+        } else {
+            Log.d("SERVICY", "Job not scheduled");
+        }
+
+
         if (isChecked){
             if (!isServiceRunning(view)){
                 view.startService(new Intent(view, NotificationService.class));
@@ -155,9 +179,12 @@ public class UserPresenter {
     }
 
     private void switchNotificationAlarm(boolean isChecked) {
+
+
+
         Alarm alarm = new Alarm((Context) view);
         if (isChecked) {
-            alarm.on(NotificationBroadcast.class, 1000L*60*5);
+            alarm.on(NotificationBroadcast.class, 1000L*60*1);
         } else {
             alarm.off(NotificationBroadcast.class);
         }

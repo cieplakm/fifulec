@@ -3,6 +3,7 @@
     package="com.mmc.fifulec">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".Fifulec"
@@ -36,7 +37,8 @@
 
         <service
             android:name=".NotificationService"
-            android:exported="false"></service>
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE"></service>
     </application>
 
 </manifest>
