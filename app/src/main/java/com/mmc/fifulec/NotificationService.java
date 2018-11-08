@@ -1,11 +1,15 @@
 package com.mmc.fifulec;
 
 import android.app.IntentService;
+import android.app.job.JobInfo;
 import android.app.job.JobParameters;
+import android.app.job.JobScheduler;
 import android.app.job.JobService;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.util.Log;
 
+import android.widget.Toast;
 import com.google.firebase.database.FirebaseDatabase;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.ChallengeStatus;
@@ -39,81 +43,82 @@ public class NotificationService extends JobService {
 
     @Override
     public boolean onStartJob(JobParameters params) {
-        Log.e("SERVICY", "onStartCommand");
-        FirebaseDatabase instance = FirebaseDatabase.getInstance();
-        userRepository = new FirebaseUserRepository(instance);
-        preferences = new Preferences(this.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
-
-        challengeService = new ChallengeService(new FirebaseChallengeRepository(instance), new ChallengeMappingService(new FirebaseMappingRepository(instance)));
-
-        Observable<User> userObservable = Observable.just(false)
-                .flatMap(new Function<Boolean, ObservableSource<User>>() {
-                    @Override
-                    public ObservableSource<User> apply(Boolean isUserInAppContext) {
-                        if (isUserInAppContext) {
-                            return null;
-                        } else {
-                            return userRepository.userByUuidObservable(preferences.getUuid());
-                        }
-                    }
-                });
-
-
-        Observable<Challenge> stringObservable = userObservable
-                .flatMap(new Function<User, ObservableSource<String>>() {
-
-                    @Override
-                    public ObservableSource<String> apply(User user) throws Exception {
-                        NotificationService.this.user = user;
-                        return challengeService.observeChallengeChangesOrAdded(user);
-                    }
-                })
-                .flatMap(new Function<String, ObservableSource<Challenge>>() {
-                    @Override
-                    public ObservableSource<Challenge> apply(String s) throws Exception {
-                        return challengeService.challengePerUuid(s);
-                    }
-                })
-                .filter(new Predicate<Challenge>() {
-                    @Override
-                    public boolean test(Challenge challenge) throws Exception {
-                        if (challenge.getLastChangedById() == null) {
-                            return false;
-                        }
-                        return !challenge.getLastChangedById().equals(user.getUuid());
-                    }
-                });
-
-
-        stringObservable.subscribe(new Observer<Challenge>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-
-            }
-
-            @Override
-            public void onNext(Challenge s) {
-                if (preferences.isNotificationActive()) {
-                    FifulecNotification fifulecNotification = new FifulecNotification(NotificationService.this);
-                    if(s.getChallengeStatus()== ChallengeStatus.NOT_ACCEPTED){
-                        fifulecNotification.showNewChallengeNotification(Collections.singletonList(s));
-                    }else{
-                        fifulecNotification.showChallengeChanged(getMessage(s));
-                    }
-                    Log.e("SERVICY", "Challenge");
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onComplete() {
-
-            }
-        });
+        Log.e("SERVICY", "onStartJob");
+        jobFinished(params, true);
+//        FirebaseDatabase instance = FirebaseDatabase.getInstance();
+//        userRepository = new FirebaseUserRepository(instance);
+//        preferences = new Preferences(this.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
+//
+//        challengeService = new ChallengeService(new FirebaseChallengeRepository(instance), new ChallengeMappingService(new FirebaseMappingRepository(instance)));
+//
+//        Observable<User> userObservable = Observable.just(false)
+//                .flatMap(new Function<Boolean, ObservableSource<User>>() {
+//                    @Override
+//                    public ObservableSource<User> apply(Boolean isUserInAppContext) {
+//                        if (isUserInAppContext) {
+//                            return null;
+//                        } else {
+//                            return userRepository.userByUuidObservable(preferences.getUuid());
+//                        }
+//                    }
+//                });
+//
+//
+//        Observable<Challenge> stringObservable = userObservable
+//                .flatMap(new Function<User, ObservableSource<String>>() {
+//
+//                    @Override
+//                    public ObservableSource<String> apply(User user) throws Exception {
+//                        NotificationService.this.user = user;
+//                        return challengeService.observeChallengeChangesOrAdded(user);
+//                    }
+//                })
+//                .flatMap(new Function<String, ObservableSource<Challenge>>() {
+//                    @Override
+//                    public ObservableSource<Challenge> apply(String s) throws Exception {
+//                        return challengeService.challengePerUuid(s);
+//                    }
+//                })
+//                .filter(new Predicate<Challenge>() {
+//                    @Override
+//                    public boolean test(Challenge challenge) throws Exception {
+//                        if (challenge.getLastChangedById() == null) {
+//                            return false;
+//                        }
+//                        return !challenge.getLastChangedById().equals(user.getUuid());
+//                    }
+//                });
+//
+//
+//        stringObservable.subscribe(new Observer<Challenge>() {
+//            @Override
+//            public void onSubscribe(Disposable d) {
+//
+//            }
+//
+//            @Override
+//            public void onNext(Challenge s) {
+//                if (preferences.isNotificationActive()) {
+//                    FifulecNotification fifulecNotification = new FifulecNotification(NotificationService.this);
+//                    if(s.getChallengeStatus()== ChallengeStatus.NOT_ACCEPTED){
+//                        fifulecNotification.showNewChallengeNotification(Collections.singletonList(s));
+//                    }else{
+//                        fifulecNotification.showChallengeChanged(getMessage(s));
+//                    }
+//                    Log.e("SERVICY", "Challenge");
+//                }
+//            }
+//
+//            @Override
+//            public void onError(Throwable e) {
+//
+//            }
+//
+//            @Override
+//            public void onComplete() {
+//
+//            }
+//        });
 
 
         return false;
@@ -121,10 +126,30 @@ public class NotificationService extends JobService {
 
     @Override
     public boolean onStopJob(JobParameters params) {
+        Log.e("SERVICY", "onStopJob");
+        scheduleRefresh();
         return false;
     }
 
+    private void scheduleRefresh() {
+        ComponentName componentName = new ComponentName(this, NotificationService.class);
+        JobInfo jobInfo = new JobInfo.Builder(12, componentName)
+                .setMinimumLatency(1000*5)
+                .setOverrideDeadline(10 * 1000)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .build();
 
+        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(JOB_SCHEDULER_SERVICE);
+
+        int schedule = jobScheduler.schedule(jobInfo);
+
+        if (schedule == JobScheduler.RESULT_SUCCESS) {
+            Log.d("SERVICY", "Job scheduled form scheduleRefresh");
+        } else {
+            Log.d("SERVICY", "Job not scheduled from scheduleRefresh");
+        }
+
+    }
 
     private String getMessage(Challenge challenge) {
         String becouseOf;
@@ -155,13 +180,6 @@ public class NotificationService extends JobService {
 
 
         return becouseOf + " " + verb;
-    }
-
-    @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
-        Log.e("SERVICY", "onStart");
-
     }
 
     @Override

@@ -1,13 +1,18 @@
 package com.mmc.fifulec.activity;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import com.mmc.fifulec.Fifulec;
+import com.mmc.fifulec.NotificationService;
 import com.mmc.fifulec.R;
 import com.mmc.fifulec.contract.UserContract;
 import com.mmc.fifulec.presenter.UserPresenter;
@@ -51,6 +56,25 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
             }
         });
         presenter.onCreate(this);
+
+
+
+        ComponentName componentName = new ComponentName(this, NotificationService.class);
+        JobInfo jobInfo = new JobInfo.Builder(12, componentName)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
+                .setMinimumLatency(1000)
+                .setOverrideDeadline(3 * 1000)
+                .build();
+
+        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(JOB_SCHEDULER_SERVICE);
+
+        int resultCode = jobScheduler.schedule(jobInfo);
+
+        if (resultCode == JobScheduler.RESULT_SUCCESS) {
+            Log.d("SERVICY", "Job scheduled!");
+        } else {
+            Log.d("SERVICY", "Job not scheduled");
+        }
 
 
     }

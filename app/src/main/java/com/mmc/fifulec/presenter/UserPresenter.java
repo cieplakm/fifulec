@@ -8,9 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.util.Pair;
-
 import com.mmc.fifulec.NotificationService;
-import com.mmc.fifulec.utils.StatsMaper;
 import com.mmc.fifulec.broadcastreciver.Alarm;
 import com.mmc.fifulec.broadcastreciver.NotificationBroadcast;
 import com.mmc.fifulec.contract.UserContract;
@@ -20,12 +18,12 @@ import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
 import com.mmc.fifulec.utils.Preferences;
-
-import javax.inject.Inject;
-
+import com.mmc.fifulec.utils.StatsMaper;
 import io.reactivex.Observer;
 import io.reactivex.SingleObserver;
 import io.reactivex.disposables.Disposable;
+
+import javax.inject.Inject;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
@@ -34,8 +32,11 @@ import static android.content.Context.JOB_SCHEDULER_SERVICE;
 public class UserPresenter {
 
     private UserContract.View view;
+
     private AppContext appContext;
+
     private ChallengeService challengeService;
+
     private Preferences preferences;
 
     @Inject
@@ -81,26 +82,26 @@ public class UserPresenter {
 
         statsMaper.goalBalance(user.getUuid())
                 .subscribe(new Observer<String>() {
-            @Override
-            public void onSubscribe(Disposable d) {
+                    @Override
+                    public void onSubscribe(Disposable d) {
 
-            }
+                    }
 
-            @Override
-            public void onNext(String s) {
-                view.setGoolsBilance(s);
-            }
+                    @Override
+                    public void onNext(String s) {
+                        view.setGoolsBilance(s);
+                    }
 
-            @Override
-            public void onError(Throwable e) {
+                    @Override
+                    public void onError(Throwable e) {
 
-            }
+                    }
 
-            @Override
-            public void onComplete() {
+                    @Override
+                    public void onComplete() {
 
-            }
-        });
+                    }
+                });
 
         statsMaper.winDrawLose(user)
                 .subscribe(new Observer<Pair<ChallengeScoreType, Integer>>() {
@@ -140,30 +141,11 @@ public class UserPresenter {
     public void onNotiSwitchChanged(boolean isChecked) {
         preferences.putNotificationActive(isChecked);
         switchNotificationAlarm(isChecked);
-        Context view = (Context) this.view;
+        Context context = (Context) this.view;
 
-
-        Log.e("SERVICY", "BROADCAST");
-
-        ComponentName componentName = new ComponentName(view, NotificationService.class);
-        JobInfo jobInfo = new JobInfo.Builder(12, componentName)
-                .setRequiresCharging(true)
-                . setPeriodic(1000)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-                .build();
-
-        JobScheduler jobScheduler = (JobScheduler)view.getSystemService(JOB_SCHEDULER_SERVICE);
-        int resultCode = jobScheduler.schedule(jobInfo);
-        if (resultCode == JobScheduler.RESULT_SUCCESS) {
-            Log.d("SERVICY", "Job scheduled!");
-        } else {
-            Log.d("SERVICY", "Job not scheduled");
-        }
-
-
-        if (isChecked){
-            if (!isServiceRunning(view)){
-                view.startService(new Intent(view, NotificationService.class));
+        if (isChecked) {
+            if (!isServiceRunning(context)) {
+                context.startService(new Intent(context, NotificationService.class));
             }
         }
     }
@@ -180,11 +162,9 @@ public class UserPresenter {
 
     private void switchNotificationAlarm(boolean isChecked) {
 
-
-
         Alarm alarm = new Alarm((Context) view);
         if (isChecked) {
-            alarm.on(NotificationBroadcast.class, 1000L*60*1);
+            alarm.on(NotificationBroadcast.class, 1000L * 60 * 1);
         } else {
             alarm.off(NotificationBroadcast.class);
         }
