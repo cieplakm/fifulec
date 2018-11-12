@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import io.reactivex.Observable;
 import io.reactivex.ObservableSource;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 
 @AppScope
 public class UserService {
@@ -28,7 +29,7 @@ public class UserService {
         this.securityRepository = securityRepository;
     }
 
-    public void create(String nick, String password) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+    private String create(String nick, String password) throws UnsupportedEncodingException, NoSuchAlgorithmException {
         UUID uuid = UUID.randomUUID();
         String s = uuid.toString();
         PasswordCrypter passwordCrypter = new PasswordCrypter();
@@ -39,10 +40,19 @@ public class UserService {
                 .build();
         securityRepository.save(nick, s);
         userRepository.saveUser(user);
+
+        return s;
     }
 
-    public Observable<User> userByNick(String nick) {
+    public Observable<User> userByNick(final String nick, final String pass) {
         return securityRepository.uuidByNickObservable(nick)
+                .onErrorReturn(new Function<Throwable, String>() {
+                    @Override
+                    public String apply(Throwable throwable) throws Exception {
+                        String s = create(nick, pass);
+                        return s;
+                    }
+                })
                 .flatMap(new Function<String, ObservableSource<User>>() {
                     @Override
                     public ObservableSource<User> apply(String uuid) throws Exception {

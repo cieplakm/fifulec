@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Predicate;
 import com.mmc.fifulec.di.AppScope;
@@ -18,6 +19,7 @@ public class UserListPresenter {
     private UsersListContract.View view;
     private UserService userService;
     private AppContext appContext;
+    private Disposable userList;
 
     @Inject
     public UserListPresenter(UserService userService, AppContext appContext) {
@@ -28,11 +30,11 @@ public class UserListPresenter {
     public void onCreate(final UsersListContract.View view) {
         this.view = view;
 
-        userService.getUsers()
+        userList = userService.getUsers()
                 .filter(new Predicate<User>() {
                     @Override
                     public boolean test(User user) throws Exception {
-                        return !user.getUuid().equals( appContext.getUser().getUuid());
+                        return !user.getUuid().equals(appContext.getUser().getUuid());
                     }
                 })
                 .toList()
@@ -42,5 +44,11 @@ public class UserListPresenter {
                         view.setUserList4Adapter(users);
                     }
                 });
+    }
+
+    public void onStop(){
+        if (userList != null){
+            userList.dispose();
+        }
     }
 }

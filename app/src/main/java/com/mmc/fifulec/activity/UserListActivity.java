@@ -56,6 +56,12 @@ public class UserListActivity extends AppCompatActivity implements UsersListCont
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        presenter.onStop();
+    }
+
+    @Override
     public void setUserList4Adapter(List<User> users){
         userListAdapter.setUsers(users);
         userListAdapter.notifyDataSetChanged();

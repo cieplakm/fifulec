@@ -51,16 +51,7 @@ public class LoginPresenter {
         final String properNick = nick.replace(" ", "");
         final String properPass = pass.replace(" ", "");
 
-        userService
-                .userByNick(properNick)
-                .retryWhen(new Function<Observable<Throwable>, ObservableSource<User>>() {
-                    @Override
-                    public ObservableSource<User> apply(Observable<Throwable> throwableObservable) throws Exception {
-                        userService.create(properNick, properPass);
-                        return userService
-                                .userByNick(properNick);
-                    }
-                })
+        userService.userByNick(properNick, properPass)
                 .doOnNext(new Consumer<User>() {
                     @Override
                     public void accept(User user) throws Exception {

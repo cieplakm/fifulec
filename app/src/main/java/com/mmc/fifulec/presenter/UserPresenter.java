@@ -65,7 +65,8 @@ public class UserPresenter {
         final User user = appContext.getUser();
 
 
-        challengeService.challengesPerUser(user).doOnComplete(new Action() {
+        challengeService.challengesPerUser(user)
+                .doOnComplete(new Action() {
             @Override
             public void run() throws Exception {
                 updaeScore();

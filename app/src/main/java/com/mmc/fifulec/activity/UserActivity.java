@@ -79,7 +79,7 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
                 presenter.onNotiSwitchChanged(buttonView.isChecked());
             }
         });
-        presenter.onCreate(this);
+
 
         challenges4MeFragment = new ChallengeListFragment();
 
@@ -103,6 +103,8 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
         }
 
         chPresenter.onCreate(this);
+        presenter.onCreate(this);
+
     }
 
     @Override
