@@ -4,7 +4,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Pair;
-
 import com.mmc.fifulec.NotificationService;
 import com.mmc.fifulec.broadcastreciver.Alarm;
 import com.mmc.fifulec.broadcastreciver.NotificationBroadcast;
@@ -16,12 +15,17 @@ import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
 import com.mmc.fifulec.utils.Preferences;
 import com.mmc.fifulec.utils.StatsMaper;
+<<<<<<< HEAD
 
 import javax.inject.Inject;
 
+=======
+>>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+
+import javax.inject.Inject;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 
@@ -29,8 +33,11 @@ import static android.content.Context.ACTIVITY_SERVICE;
 public class UserPresenter {
 
     private UserContract.View view;
+
     private AppContext appContext;
+
     private ChallengeService challengeService;
+
     private Preferences preferences;
 
     @Inject
@@ -81,6 +88,32 @@ public class UserPresenter {
                     }
                 });
 
+<<<<<<< HEAD
+=======
+        statsMaper.goalBalance(user.getUuid())
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(String s) {
+                        view.setGoolsBilance(s);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+
+>>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
         statsMaper.winDrawLose(user)
                 .subscribe(new Observer<Pair<ChallengeScoreType, Integer>>() {
                     @Override
@@ -119,11 +152,19 @@ public class UserPresenter {
     public void onNotiSwitchChanged(boolean isChecked) {
         preferences.putNotificationActive(isChecked);
         switchNotificationAlarm(isChecked);
+<<<<<<< HEAD
         Context view = (Context) this.view;
 
         if (isChecked) {
             if (!isServiceRunning(view)) {
                 view.startService(new Intent(view, NotificationService.class));
+=======
+        Context context = (Context) this.view;
+
+        if (isChecked) {
+            if (!isServiceRunning(context)) {
+                context.startService(new Intent(context, NotificationService.class));
+>>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
             }
         }
     }
@@ -140,7 +181,10 @@ public class UserPresenter {
 
     private void switchNotificationAlarm(boolean isChecked) {
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
         Alarm alarm = new Alarm((Context) view);
         if (isChecked) {
             alarm.on(NotificationBroadcast.class, 1000L * 60 * 1);
