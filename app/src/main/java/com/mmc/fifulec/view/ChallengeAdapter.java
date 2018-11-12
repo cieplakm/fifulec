@@ -17,15 +17,13 @@ import com.mmc.fifulec.R;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.ChallengeStatus;
 import com.mmc.fifulec.model.OnChallengeClickedListener;
+import com.mmc.fifulec.model.User;
 
 public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.ViewHolder> {
 
     private List<Challenge> challenges;
     private OnChallengeClickedListener onChallengeClickedListener;
-
-    public ChallengeAdapter(OnChallengeClickedListener onChallengeClickedListener) {
-        this.onChallengeClickedListener = onChallengeClickedListener;
-    }
+    private User me;
 
     public ChallengeAdapter() {
     }
@@ -45,12 +43,21 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
         viewHolder.tvToUser.setText(challenge.getToUserNick());
 
         String stattitle = null;
+
         switch (challenge.getChallengeStatus()){
             case ACCEPTED:
-                stattitle="Zaakceptowany";
+                if (me.getUuid().equals(challenge.getFromUserUuid())){
+                    stattitle="Wprowadź wynik";
+                }else {
+                    stattitle = "Oczekuje na wprowadzenie wyników";
+                }
                 break;
             case NOT_ACCEPTED:
-                stattitle="Czeka na akceptację";
+                if (me.getUuid().equals(challenge.getFromUserUuid())){
+                    stattitle="Czekaj na akceptację";
+                }else {
+                    stattitle = "Przyjmij lub odrzuć wyzwanie";
+                }
                 break;
             case FINISHED:
                 stattitle="Zakończony";
@@ -59,7 +66,11 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
                 stattitle="Odrzucony";
                 break;
             case NOT_CONFIRMED:
-                stattitle="Czeka na potwierdzenie";
+                if (me.getUuid().equals(challenge.getFromUserUuid())){
+                    stattitle="Czekaj na potwierdzenie wyniku";
+                }else {
+                    stattitle = "Potwierdź wynik";
+                }
                 break;
 
 
@@ -105,6 +116,10 @@ public class ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.View
 
     public void setOnChallengeClickedListener(OnChallengeClickedListener challengeClickedListener) {
         this.onChallengeClickedListener = challengeClickedListener;
+    }
+
+    public void setMeUser(User me) {
+        this.me = me;
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

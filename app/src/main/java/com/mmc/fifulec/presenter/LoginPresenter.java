@@ -10,9 +10,13 @@ import com.mmc.fifulec.utils.Preferences;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiPredicate;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 
 @AppScope
@@ -32,7 +36,7 @@ public class LoginPresenter {
         this.appContext = appContext;
     }
 
-    public void onCreate(final LoginContract.View view) {
+    public void onResume(final LoginContract.View view) {
         this.view = view;
 
         String uuId = preferences.getUuid();
@@ -49,11 +53,12 @@ public class LoginPresenter {
 
         userService
                 .userByNick(properNick)
-                .retry(new Predicate<Throwable>() {
+                .retryWhen(new Function<Observable<Throwable>, ObservableSource<User>>() {
                     @Override
-                    public boolean test(Throwable throwable) throws Exception {
+                    public ObservableSource<User> apply(Observable<Throwable> throwableObservable) throws Exception {
                         userService.create(properNick, properPass);
-                        return true;
+                        return userService
+                                .userByNick(properNick);
                     }
                 })
                 .doOnNext(new Consumer<User>() {
@@ -66,6 +71,7 @@ public class LoginPresenter {
                         }
                     }
                 })
+
                 .subscribe(getLoginObserver());
     }
 

@@ -29,15 +29,20 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
 import io.reactivex.schedulers.Schedulers;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 
 import static android.content.Context.ACTIVITY_SERVICE;
 import static android.content.Context.JOB_SCHEDULER_SERVICE;
 import static android.content.Context.MODE_PRIVATE;
 
 public class NotificationBroadcast extends BroadcastReceiver {
+
+    private static final int JOB_ID = 19243245;
+
     @Override
     public void onReceive(final Context context, Intent intent) {
-
 
 
 //        Preferences preferences = new Preferences(context.getSharedPreferences("com.mmc.fifulec_preferences", MODE_PRIVATE));
@@ -69,15 +74,22 @@ public class NotificationBroadcast extends BroadcastReceiver {
 //        }
     }
 
-    private boolean isServiceRunning(Context view) {
-        ActivityManager manager = (ActivityManager) view.getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if ("com.mmc.fifulec.NotificationService".equals(service.service.getClassName())) {
-                return true;
+    public static boolean isJobServiceOn( Context context ) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
+
+        boolean hasBeenScheduled = false ;
+
+        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == JOB_ID ) {
+                hasBeenScheduled = true ;
+                break ;
             }
         }
-        return false;
+
+        return hasBeenScheduled ;
     }
+
+
     public Maybe<List<Challenge>> unAcceptedChallengesForUuid(final String uuid){
         FirebaseDatabase instance = FirebaseDatabase.getInstance();
 

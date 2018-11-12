@@ -34,9 +34,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Vi
 
         ButterKnife.bind(this);
         Fifulec.component().inject(this);
+    }
 
-        presenter.onCreate(this);
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        presenter.onResume(this);
     }
 
     @OnClick(R.id.btn_login)

@@ -22,6 +22,7 @@ import com.mmc.fifulec.R;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.OnChallengeClickedListener;
 import com.mmc.fifulec.model.OnChallengeConfirm;
+import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.presenter.ChallengeListPresenter;
 
 public class ChallangeListActivity extends AppCompatActivity implements ChallengeListContract.View {
@@ -32,7 +33,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
     FrameLayout flChallenges4Me;
 
     @Inject
-    ChallengeListPresenter presenter;
+    ChallengeListPresenter chPresenter;
 
 
     @Override
@@ -52,17 +53,22 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
 
         getSupportActionBar().setTitle("Aktywne wyzwania");
 
-        presenter.onCreate(this);
+        chPresenter.onCreate(this);
     }
 
     @OnClick(R.id.btn_add_challange)
     public void onAddChallengeClicked(){
-        presenter.onAddChallengeClicked();
+        chPresenter.onAddChallengeClicked();
     }
 
     @Override
     public void setChallenges4Me(List<Challenge> challenges) {
         challenges4MeFragment.setChallenges4Adapter(challenges);
+    }
+
+    @Override
+    public void setUser(User user){
+        challenges4MeFragment.setUser(user);
     }
 
     @Override
@@ -83,11 +89,11 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        presenter.onAcceptedClicked(challenge);
+                        chPresenter.onAcceptedClicked(challenge);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:
-                        presenter.onRejectClicked(challenge);
+                        chPresenter.onRejectClicked(challenge);
                         break;
                 }
             }
@@ -143,7 +149,7 @@ public class ChallangeListActivity extends AppCompatActivity implements Challeng
             public void onClick(DialogInterface dialog, int which) {
                 switch (which){
                     case DialogInterface.BUTTON_POSITIVE:
-                        presenter.onCancelClicked(challenge);
+                        chPresenter.onCancelClicked(challenge);
                         break;
 
                     case DialogInterface.BUTTON_NEGATIVE:

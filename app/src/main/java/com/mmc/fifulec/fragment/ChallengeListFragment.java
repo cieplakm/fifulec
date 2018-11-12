@@ -15,6 +15,7 @@ import butterknife.ButterKnife;
 import com.mmc.fifulec.R;
 import com.mmc.fifulec.model.Challenge;
 import com.mmc.fifulec.model.OnChallengeClickedListener;
+import com.mmc.fifulec.model.User;
 import com.mmc.fifulec.view.ChallengeAdapter;
 
 public class ChallengeListFragment extends Fragment {
@@ -46,6 +47,10 @@ public class ChallengeListFragment extends Fragment {
     public void setOnChallengeClickListener(OnChallengeClickedListener onChallengeClickListener){
         this.onChallengeClickListener = onChallengeClickListener;
         challengeAdapter.setOnChallengeClickedListener(onChallengeClickListener);
+    }
+
+    public void setUser(User user){
+        challengeAdapter.setMeUser(user);
     }
 
     @Override

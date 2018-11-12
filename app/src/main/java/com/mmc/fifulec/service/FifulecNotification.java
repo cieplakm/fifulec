@@ -55,6 +55,7 @@ public class FifulecNotification {
         builder.addButtonAction(reject, R.drawable.circle_gray, "Odrzuć", 123);
         builder.clickAction(openIntent, 1623);
 
+
         manager.notify(22123, builder.build());
     }
 
@@ -102,6 +103,8 @@ public class FifulecNotification {
             builder
                     .setSmallIcon(R.drawable.circle_gray)
                     .setAutoCancel(true);
+
+            builder.setGroup("com.mmc.fifulec.GROUP");
         }
 
         public NotificationBuilder title(String title) {

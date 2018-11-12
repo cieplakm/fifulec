@@ -153,7 +153,10 @@ public class FirebaseMappingRepository implements ChallengeMappingRepository {
 
         @Override
         public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
+            ChallengeMapping value = dataSnapshot.getValue(ChallengeMapping.class);
+            if (value != null && value.getStatus() != null && value.getStatus() != ChallengeMappingStatus.OLD){
+                subject.onNext(value.getChallengeUuid());
+            }
         }
 
         @Override

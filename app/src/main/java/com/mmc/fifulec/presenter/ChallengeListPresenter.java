@@ -55,6 +55,8 @@ public class ChallengeListPresenter {
     public void onCreate(final ChallengeListContract.View view) {
         this.view = view;
 
+        view.setUser(appContext.getUser());
+
         view.setOnChallenge4MeClickListener(new OnChallengeClickedListener() {
             @Override
             public void onChallengeSelect(Challenge challenge) {
@@ -193,7 +195,7 @@ public class ChallengeListPresenter {
     }
 
     private void rejectChallenge(Challenge challenge) {
-        challengeService.rejectChallenge(challenge, appContext.getUser());
+        challengeService.delete(challenge);
     }
 
     private void confirm(final Challenge challenge) {

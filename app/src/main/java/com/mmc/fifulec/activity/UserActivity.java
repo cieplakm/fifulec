@@ -1,16 +1,38 @@
 package com.mmc.fifulec.activity;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.CompoundButton;
+import android.widget.FrameLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mmc.fifulec.Fifulec;
+import com.mmc.fifulec.NotificationService;
 import com.mmc.fifulec.R;
+import com.mmc.fifulec.broadcastreciver.NotificationBroadcast;
+import com.mmc.fifulec.contract.ChallengeListContract;
 import com.mmc.fifulec.contract.UserContract;
+import com.mmc.fifulec.fragment.ChallengeListFragment;
+import com.mmc.fifulec.model.Challenge;
+import com.mmc.fifulec.model.OnChallengeClickedListener;
+import com.mmc.fifulec.model.OnChallengeConfirm;
+import com.mmc.fifulec.model.User;
+import com.mmc.fifulec.presenter.ChallengeListPresenter;
 import com.mmc.fifulec.presenter.UserPresenter;
+
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -18,7 +40,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class UserActivity extends AppCompatActivity implements UserContract.View {
+public class UserActivity extends AppCompatActivity implements UserContract.View, ChallengeListContract.View {
 
     @BindView(R.id.tv_chalanges_amount)
     TextView tvUChallengesAmount;
@@ -32,6 +54,14 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     TextView tvLosesAmount;
     @BindView(R.id.sw_notification)
     Switch notiSwitch;
+
+    private ChallengeListFragment challenges4MeFragment;
+
+    @BindView(R.id.fl_challenges_4_me)
+    FrameLayout flChallenges4Me;
+
+    @Inject
+    ChallengeListPresenter chPresenter;
 
     @Inject
     UserPresenter presenter;
@@ -52,18 +82,55 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
         });
         presenter.onCreate(this);
 
+        challenges4MeFragment = new ChallengeListFragment();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fl_challenges_4_me, challenges4MeFragment)
+                .commit();
+
+        boolean jobServiceOn = isJobServiceOn(this);
+
+        ComponentName componentName = new ComponentName(this, NotificationService.class);
+        JobInfo jobInfo = new JobInfo.Builder(123444, componentName)
+                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+                .setPeriodic(15*60*1000L)
+                .build();
+
+        JobScheduler jobScheduler = (JobScheduler)this.getSystemService(JOB_SCHEDULER_SERVICE);
+
+        int resultCode = jobScheduler.schedule(jobInfo);
+
+        if (resultCode == JobScheduler.RESULT_SUCCESS) {
+            Log.d("SERVICY", "Job scheduled!");
+        }
+
+
+
+        chPresenter.onCreate(this);
 
     }
+    public static boolean isJobServiceOn(Context context ) {
+        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
+
+        boolean hasBeenScheduled = false ;
+
+        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
+            if ( jobInfo.getId() == 123444 ) {
+                hasBeenScheduled = true ;
+                Log.e("SERVICY", "isJobServiceOn 123444");
+                break ;
+            }
+        }
+
+        return hasBeenScheduled ;
+    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
         presenter.onResume();
-    }
-
-    @OnClick(R.id.btn_challanges)
-    public void onChalangesClicked() {
-        presenter.onChallengesClickedClicked();
     }
 
     @Override
@@ -105,5 +172,118 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
     @Override
     public void setNotiSwitchActive(boolean notificationActive) {
         notiSwitch.setChecked(notificationActive);
+    }
+
+//
+//
+//
+
+
+    @OnClick(R.id.btn_add_challange)
+    public void onAddChallengeClicked(){
+        chPresenter.onAddChallengeClicked();
+    }
+
+    @Override
+    public void setChallenges4Me(List<Challenge> challenges) {
+        challenges4MeFragment.setChallenges4Adapter(challenges);
+    }
+
+    @Override
+    public void setUser(User user){
+        challenges4MeFragment.setUser(user);
+    }
+
+    @Override
+    public void showUsersList(){
+        Intent intent = new Intent(this, UserListActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public void setOnChallengeClickListener4Adapter(OnChallengeClickedListener onChallengeClickListener4Adapter){
+
+    }
+
+    @Override
+    public void showDaialogToAcceptChallenge(final Challenge challenge) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        chPresenter.onAcceptedClicked(challenge);
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        chPresenter.onRejectClicked(challenge);
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Czy chcesz zaakceptować wyzwanie?").setPositiveButton("Tak", dialogClickListener)
+                .setNegativeButton("Nie", dialogClickListener).show();
+    }
+
+    @Override
+    public void setOnChallenge4MeClickListener(OnChallengeClickedListener onChallengeClickedListener) {
+        challenges4MeFragment.setOnChallengeClickListener(onChallengeClickedListener);
+    }
+
+    @Override
+    public void openResolveActivity() {
+        Intent i = new Intent(this, ResolveChallengeActivity.class);
+        startActivity(i);
+    }
+
+    @Override
+    public void showConfirmDialog(final OnChallengeConfirm onChallengeConfirm) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        onChallengeConfirm.confirm();
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        onChallengeConfirm.notConfirmed();
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Czy wynik zgadza się?").setPositiveButton("Tak", dialogClickListener)
+                .setNegativeButton("Nie", dialogClickListener).show();
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showDaialogToCancelChallenge(final Challenge challenge) {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        chPresenter.onCancelClicked(challenge);
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Czy chcesz anulować wyzwanie?").setPositiveButton("Tak", dialogClickListener)
+                .setNegativeButton("Nie", dialogClickListener).show();
     }
 }

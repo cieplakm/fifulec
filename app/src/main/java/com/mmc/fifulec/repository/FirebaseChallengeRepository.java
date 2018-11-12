@@ -103,7 +103,9 @@ public class FirebaseChallengeRepository implements ChallengeRepository {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Challenge value = dataSnapshot.getValue(Challenge.class);
-                subject.onNext(value);
+                if (value!= null){
+                    subject.onNext(value);
+                }
                 subject.onComplete();
             }
 
