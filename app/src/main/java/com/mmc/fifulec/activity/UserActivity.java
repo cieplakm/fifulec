@@ -1,18 +1,11 @@
 package com.mmc.fifulec.activity;
 
-<<<<<<< HEAD
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-=======
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
->>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -95,8 +88,6 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
                 .replace(R.id.fl_challenges_4_me, challenges4MeFragment)
                 .commit();
 
-        boolean jobServiceOn = isJobServiceOn(this);
-
         ComponentName componentName = new ComponentName(this, NotificationService.class);
         JobInfo jobInfo = new JobInfo.Builder(123444, componentName)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
@@ -111,49 +102,8 @@ public class UserActivity extends AppCompatActivity implements UserContract.View
             Log.d("SERVICY", "Job scheduled!");
         }
 
-
-
         chPresenter.onCreate(this);
-
     }
-    public static boolean isJobServiceOn(Context context ) {
-        JobScheduler scheduler = (JobScheduler) context.getSystemService( Context.JOB_SCHEDULER_SERVICE ) ;
-
-        boolean hasBeenScheduled = false ;
-
-        for ( JobInfo jobInfo : scheduler.getAllPendingJobs() ) {
-            if ( jobInfo.getId() == 123444 ) {
-                hasBeenScheduled = true ;
-                Log.e("SERVICY", "isJobServiceOn 123444");
-                break ;
-            }
-        }
-
-<<<<<<< HEAD
-        return hasBeenScheduled ;
-=======
-
-        ComponentName componentName = new ComponentName(this, NotificationService.class);
-        JobInfo jobInfo = new JobInfo.Builder(12, componentName)
-                .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
-                .setMinimumLatency(1000)
-                .setOverrideDeadline(3 * 1000)
-                .build();
-
-        JobScheduler jobScheduler = (JobScheduler) this.getSystemService(JOB_SCHEDULER_SERVICE);
-
-        int resultCode = jobScheduler.schedule(jobInfo);
-
-        if (resultCode == JobScheduler.RESULT_SUCCESS) {
-            Log.d("SERVICY", "Job scheduled!");
-        } else {
-            Log.d("SERVICY", "Job not scheduled");
-        }
-
-
->>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
-    }
-
 
     @Override
     protected void onResume() {

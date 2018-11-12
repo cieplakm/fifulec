@@ -3,6 +3,7 @@ package com.mmc.fifulec.presenter;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.util.Pair;
 import com.mmc.fifulec.NotificationService;
 import com.mmc.fifulec.broadcastreciver.Alarm;
@@ -15,15 +16,21 @@ import com.mmc.fifulec.service.ChallengeService;
 import com.mmc.fifulec.utils.AppContext;
 import com.mmc.fifulec.utils.Preferences;
 import com.mmc.fifulec.utils.StatsMaper;
-<<<<<<< HEAD
+
+
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-=======
->>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
 
 import javax.inject.Inject;
 
@@ -57,6 +64,14 @@ public class UserPresenter {
 
         final User user = appContext.getUser();
 
+
+        challengeService.challengesPerUser(user).doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                updaeScore();
+            }
+        }).subscribe();
+
         challengeService.observeChallengeChangesOrAdded(user)
                 .doOnNext(new Consumer<String>() {
                     @Override
@@ -88,32 +103,6 @@ public class UserPresenter {
                     }
                 });
 
-<<<<<<< HEAD
-=======
-        statsMaper.goalBalance(user.getUuid())
-                .subscribe(new Observer<String>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(String s) {
-                        view.setGoolsBilance(s);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-
-                    }
-                });
-
->>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
         statsMaper.winDrawLose(user)
                 .subscribe(new Observer<Pair<ChallengeScoreType, Integer>>() {
                     @Override
@@ -151,45 +140,6 @@ public class UserPresenter {
 
     public void onNotiSwitchChanged(boolean isChecked) {
         preferences.putNotificationActive(isChecked);
-        switchNotificationAlarm(isChecked);
-<<<<<<< HEAD
-        Context view = (Context) this.view;
-
-        if (isChecked) {
-            if (!isServiceRunning(view)) {
-                view.startService(new Intent(view, NotificationService.class));
-=======
-        Context context = (Context) this.view;
-
-        if (isChecked) {
-            if (!isServiceRunning(context)) {
-                context.startService(new Intent(context, NotificationService.class));
->>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
-            }
-        }
     }
 
-    private boolean isServiceRunning(Context view) {
-        ActivityManager manager = (ActivityManager) view.getSystemService(ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if ("com.mmc.fifulec.NotificationService".equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void switchNotificationAlarm(boolean isChecked) {
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 64c0ba63dcc1c1fa23a63b78523b033583b98443
-        Alarm alarm = new Alarm((Context) view);
-        if (isChecked) {
-            alarm.on(NotificationBroadcast.class, 1000L * 60 * 1);
-        } else {
-            alarm.off(NotificationBroadcast.class);
-        }
-    }
 }
